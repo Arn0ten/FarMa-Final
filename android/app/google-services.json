@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "401475560603",
+    "project_id": "farma-app-84d27",
+    "storage_bucket": "farma-app-84d27.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:401475560603:android:18745788383b12b0ca923e",
+        "android_client_info": {
+          "package_name": "com.example.agricplant.agriplant"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB5HeTAS1WzVL1OxhXzftCizvTl1Rvxrqs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

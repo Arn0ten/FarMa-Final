@@ -1,0 +1,47 @@
+name: agriplant
+description: Agriculture plant app
+publish_to: "none"
+version: 0.1.0
+
+environment:
+  sdk: ">=3.0.5 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_iconly: ^1.0.1
+  google_fonts: ^5.1.0
+  badges: ^3.1.1
+  timelines: ^0.1.0
+  easy_stepper: ^0.7.3
+  firebase_core: ^2.23.0
+  firebase_auth: ^4.14.1
+  provider: ^6.1.1
+  cloud_firestore: ^4.13.2
+  image_picker: ^1.0.4
+  firebase_storage: ^11.5.3
+  cached_network_image: ^3.3.0
+  awesome_dialog: ^3.1.0
+
+
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.2
+  flutter_launcher_icons: ^0.13.1
+
+
+flutter_icons:
+  image_path: "assets/icon.jpg"
+  android: true
+  ios: true
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/
+    - assets/services/
+    - shorebird.yaml
