@@ -4,6 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../../services/auth/auth_service.dart';
+
 class MessagePageDesign {
   static ThemeData themeData = ThemeData(
     primarySwatch: Colors.green,
@@ -45,13 +47,26 @@ class MessagePageDesign {
   Widget _buildUserListItem(BuildContext context, DocumentSnapshot document) {
     Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
 
-    // Display all registered users except the current user
-    if (_auth.currentUser!.uid != data['uid']) {
+    // Ensure data['uid'] is not null before using it
+    if (data['uid'] != null && _auth.currentUser!.uid != data['uid']) {
       return ListTile(
-        leading: CircleAvatar(
-          // You can replace this with the user's profile picture
-          backgroundColor: Colors.green,
-          child: Text(data['fullName'][0]),
+        leading: StreamBuilder<String?>(
+          stream: AuthService().getUserProfileImageURLStream(data['uid']),
+          builder: (context, snapshot) {
+            return CircleAvatar(
+              backgroundColor: Colors.green,
+              child: snapshot.hasData && snapshot.data != null
+                  ? ClipOval(
+                child: Image.network(
+                  snapshot.data!,
+                  fit: BoxFit.cover,
+                  width: 36, // Adjust size as needed
+                  height: 36, // Adjust size as needed
+                ),
+              )
+                  : Text(data['fullName'][0]),
+            );
+          },
         ),
         title: Text(data['fullName']),
         subtitle: const Text('...'), // You can replace this with the last message
@@ -68,7 +83,7 @@ class MessagePageDesign {
         },
       );
     } else {
-      return Container(); // Exclude the current user from the list
+      return Container(); // Exclude the current user or user with null UID from the list
     }
   }
 }

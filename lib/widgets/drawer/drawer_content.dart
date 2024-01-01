@@ -3,6 +3,7 @@ import 'package:agriplant/pages/checkout_page.dart';
 import 'package:agriplant/pages/orders_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:agriplant/services/auth/auth_service.dart'; // Import your AuthService or the appropriate service
 
 class DrawerContent extends StatelessWidget {
   final String userName;
@@ -22,14 +23,32 @@ class DrawerContent extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CircleAvatar(
-                  backgroundColor: Colors.green,
-                  radius: 30,
-                  child: Text(
-                    userName.isEmpty ? 'U' : userName[0],
-                    style: TextStyle(fontSize: 24, color: Colors.white),
-                  ),
+                StreamBuilder<String?>(
+                  stream: AuthService().getUserProfileImageURLStream(AuthService().getCurrentUserId() ?? ""),
+                  builder: (context, snapshot) {
+                    return CircleAvatar(
+                      backgroundColor: Colors.green,
+                      radius: 30,
+                      child: snapshot.hasData && snapshot.data != null
+                          ? ClipOval(
+                        child: Image.network(
+                          snapshot.data!,
+                          fit: BoxFit.cover,
+                          width: 60,
+                          height: 60,
+                        ),
+                      )
+                          : Text(
+                        userName.isEmpty ? 'U' : userName[0],
+                        style: TextStyle(fontSize: 24, color: Colors.white),
+                      ),
+                    );
+                  },
                 ),
+
+
+
+
                 SizedBox(height: 8),
                 Text(
                   userName,
@@ -37,7 +56,8 @@ class DrawerContent extends StatelessWidget {
                 ),
               ],
             ),
-          ),const SizedBox(height: 10),
+          ),
+          const SizedBox(height: 10),
           ListTile(
             title: const Text("My orders"),
             leading: const Icon(IconlyLight.bag),

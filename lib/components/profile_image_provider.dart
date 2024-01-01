@@ -1,17 +1,12 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 class ProfileImageProvider with ChangeNotifier {
-  late String _profileImageUrl;
+  String _imagePath = '';
 
-  ProfileImageProvider() {
-    // Initialize with an empty string, you can also load the URL from local storage if available.
-    _profileImageUrl = '';
-  }
+  String get imagePath => _imagePath;
 
-  String get profileImageUrl => _profileImageUrl;
-
-  void updateProfileImage(String newImageUrl) {
-    _profileImageUrl = newImageUrl;
+  void setImagePath(String newPath) {
+    _imagePath = newPath;
     notifyListeners();
   }
 }

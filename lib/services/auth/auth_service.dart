@@ -137,6 +137,12 @@ class AuthService with ChangeNotifier {
           await FirebaseAuth.instance.currentUser?.updatePhotoURL(downloadUrl);
 
           print('Profile image uploaded successfully. URL: $downloadUrl');
+          // Update the user's profile image URL in Firestore
+          await _firestore
+              .collection('Farma Users')
+              .doc(uid)
+              .set({'photoURL': downloadUrl}, SetOptions(merge: true));
+
           return downloadUrl; // Return the download URL
         } else {
           throw ('Image upload failed');
@@ -151,6 +157,7 @@ class AuthService with ChangeNotifier {
       throw e; // Rethrow the exception if needed
     }
   }
+
   Future<String?> getUserProfileImageURL() async {
     try {
       String uid = FirebaseAuth.instance.currentUser?.uid ?? "";
@@ -163,8 +170,17 @@ class AuthService with ChangeNotifier {
           if (currentUser.photoURL != null && currentUser.photoURL!.isNotEmpty) {
             return currentUser.photoURL;
           } else {
-            // If the user does not have a photo URL, you may choose to return a default URL or handle it as needed
-            return null;
+            // If the user does not have a photo URL, try fetching from Firestore
+            DocumentSnapshot<Map<String, dynamic>> userSnapshot =
+            await _firestore.collection('Farma Users').doc(uid).get();
+            if (userSnapshot.exists) {
+              Map<String, dynamic> userData = userSnapshot.data() ?? {};
+              String? photoURL = userData['photoURL'];
+              return photoURL;
+            } else {
+              // If no photoURL is found in Firestore, you may choose to return a default URL or handle it as needed
+              return null;
+            }
           }
         }
       }
@@ -174,6 +190,29 @@ class AuthService with ChangeNotifier {
       return null;
     }
   }
-
-
+  Stream<String?> getUserProfileImageURLStream(String userId) {
+    try {
+      return FirebaseFirestore.instance
+          .collection('Farma Users')
+          .doc(userId)
+          .snapshots()
+          .map((DocumentSnapshot<Map<String, dynamic>> snapshot) {
+        // Check if the document exists
+        if (snapshot.exists) {
+          // Retrieve the user data and return the photoURL
+          Map<String, dynamic> userData = snapshot.data() ?? {};
+          return userData['photoURL'];
+        } else {
+          // Return null if the document does not exist
+          return null;
+        }
+      });
+    } catch (e) {
+      print('Error getting user profile image URL: $e');
+      return const Stream<String?>.empty();
+    }
+  }
+  String? getCurrentUserId() {
+    return FirebaseAuth.instance.currentUser?.uid;
+  }
 }

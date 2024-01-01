@@ -3,12 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import '../models/product.dart';
-import '../components/text_box.dart';
+import '../services/auth/auth_gate.dart';
+import '../services/auth/auth_service.dart';
+import 'package:flutter_iconly/flutter_iconly.dart';
 import '../pages/checkout_page.dart';
 import '../pages/orders_page.dart';
-import '../services/auth/auth_gate.dart';
-import 'package:flutter_iconly/flutter_iconly.dart';
-import '../services/auth/auth_service.dart';
 
 class ProfileDesign {
   static Widget buildProfilePage({
@@ -17,8 +16,8 @@ class ProfileDesign {
     required Function signOut,
     required Stream<List<Product>> userProducts,
     required VoidCallback pickImage,
-    required VoidCallback uploadImage, // Add this line
     required String imagePath,
+    required VoidCallback uploadImage, // Add this line
   }) {
     return SingleChildScrollView(
       child: Column(
@@ -40,7 +39,16 @@ class ProfileDesign {
                       shape: BoxShape.circle,
                       color: Colors.grey[200],
                     ),
-                    child: _buildProfileImage(imagePath),
+                    child: StreamBuilder<String?>(
+                      stream: AuthService().getUserProfileImageURLStream(AuthService().getCurrentUserId() ?? ""),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData && snapshot.data != null) {
+                          return _buildProfileImage(snapshot.data!);
+                        } else {
+                          return _buildDefaultProfileIcon();
+                        }
+                      },
+                    ),
                   ),
                 ),
               ),
@@ -48,7 +56,7 @@ class ProfileDesign {
                 top: 100,
                 right: 198,
                 child: GestureDetector(
-                  onTap: pickImage, // Call pickImage directly here
+                  onTap: pickImage,
                   child: Icon(
                     Icons.camera_alt,
                     size: 24,
@@ -65,61 +73,43 @@ class ProfileDesign {
             ),
           ),
           const SizedBox(height: 30),
-          ExpansionTile(
-            title: const Text(
-              'My details',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-              ),
-            ),
-            children: [
-              _buildDetailCard('Email', userData['email'], IconlyLight.message),
-              _buildDetailCard('Full Name', userData['fullName'], IconlyLight.user2),
-              _buildDetailCard('Age', userData['age'].toString(), IconlyLight.calendar),
-              _buildDetailCard('Address', userData['address'], IconlyLight.location),
-              _buildDetailCard('Contact Number', userData['contactNumber'].toString(), IconlyLight.call),
-            ],
-          ),
+          _buildExpansionTile('My details', [
+            _buildDetailCard('Email', userData['email'], IconlyLight.message),
+            _buildDetailCard('Full Name', userData['fullName'], IconlyLight.user2),
+            _buildDetailCard('Age', userData['age'].toString(), IconlyLight.calendar),
+            _buildDetailCard('Address', userData['address'], IconlyLight.location),
+            _buildDetailCard('Contact Number', userData['contactNumber'].toString(), IconlyLight.call),
+          ]),
           const SizedBox(height: 30),
-          ExpansionTile(
-            title: const Text(
-              'My products',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-              ),
-            ),
-            children: [
-              StreamBuilder<List<Product>>(
-                stream: userProducts,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-                    return GridView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 8.0,
-                        mainAxisSpacing: 8.0,
-                      ),
-                      itemCount: snapshot.data!.length,
-                      itemBuilder: (context, index) {
-                        return _buildProductCard(snapshot.data![index]);
-                      },
-                    );
-                  } else if (snapshot.hasError) {
-                    return Center(
-                      child: Text('Error ${snapshot.error}'),
-                    );
-                  }
-                  return const Center(
-                    child: Text('No products posted yet.'),
+          _buildExpansionTile('My products', [
+            StreamBuilder<List<Product>>(
+              stream: userProducts,
+              builder: (context, snapshot) {
+                if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+                  return GridView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 8.0,
+                      mainAxisSpacing: 8.0,
+                    ),
+                    itemCount: snapshot.data!.length,
+                    itemBuilder: (context, index) {
+                      return _buildProductCard(snapshot.data![index]);
+                    },
                   );
-                },
-              ),
-            ],
-          ),
+                } else if (snapshot.hasError) {
+                  return Center(
+                    child: Text('Error ${snapshot.error}'),
+                  );
+                }
+                return const Center(
+                  child: Text('No products posted yet.'),
+                );
+              },
+            ),
+          ]),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: ElevatedButton(
@@ -147,78 +137,17 @@ class ProfileDesign {
     );
   }
 
-  static void _updateProfileImage(File imageFile) {}
-
-  static Future<void> _pickAndUploadImage(
-      void Function() pickImage, // Adjusted parameter type
-      BuildContext context,
-      ) async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-
-    if (pickedFile != null) {
-      pickImage();
-
-      // Upload the picked image using AuthService
-      try {
-        await AuthService().uploadProfileImage(File(pickedFile.path));
-        // Display a success message or perform other actions upon successful upload
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Profile image uploaded successfully.'),
-          ),
-        );
-      } catch (e) {
-        // Handle errors during the image upload
-        print('Error uploading profile image: $e');
-        // Display an error message or perform other error-handling actions
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error uploading profile image: $e'),
-          ),
-        );
-      }
-    }
-  }
-
-
-
-  static void _showProfilePicture(BuildContext context, String imagePath) {
-    if (imagePath.isNotEmpty) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            content: ClipOval(
-              child: Image.network(
-                imagePath,
-                fit: BoxFit.cover,
-              ),
-            ),
-          );
-        },
-      );
-    }
-  }
-
-  static void _showLogoutDialog(BuildContext context, Function signOut) {
-    AwesomeDialog(
-      context: context,
-      dialogType: DialogType.WARNING,
-      animType: AnimType.SCALE,
-      title: 'Logout',
-      desc: 'Are you sure you want to logout?',
-      btnCancelOnPress: () {},
-      btnOkOnPress: () {
-        signOut();
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const AuthGate(),
-          ),
-        );
-      },
-    )..show();
+  static Widget _buildExpansionTile(String title, List<Widget> children) {
+    return ExpansionTile(
+      title: Text(
+        title,
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 18,
+        ),
+      ),
+      children: children,
+    );
   }
 
   static Widget _buildDetailCard(String title, String value, IconData iconData) {
@@ -282,11 +211,90 @@ class ProfileDesign {
         : ClipOval(
       child: Image.network(
         imagePath,
-        fit: BoxFit.cover, // Ensures that the image covers the oval shape
+        fit: BoxFit.cover,
         width: 120,
         height: 120,
       ),
     );
   }
 
+  static Widget _buildDefaultProfileIcon() {
+    return CircleAvatar(
+      radius: 60, // Adjust the radius as needed
+      backgroundColor: Colors.grey[200],
+      child: Icon(
+        Icons.account_circle,
+        size: 120,
+        color: Colors.grey,
+      ),
+    );
+  }
+
+  static Future<void> _pickAndUploadImage(
+      VoidCallback pickImage,
+      BuildContext context,
+      ) async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      pickImage();
+
+      try {
+        await AuthService().uploadProfileImage(File(pickedFile.path));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Profile image uploaded successfully.'),
+          ),
+        );
+      } catch (e) {
+        print('Error uploading profile image: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error uploading profile image: $e'),
+          ),
+        );
+      }
+    }
+  }
+
+  static void _updateProfileImage(File imageFile) {}
+
+  static void _showProfilePicture(BuildContext context, String imagePath) {
+    if (imagePath.isNotEmpty) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: ClipOval(
+              child: Image.network(
+                imagePath,
+                fit: BoxFit.cover,
+              ),
+            ),
+          );
+        },
+      );
+    }
+  }
+
+  static void _showLogoutDialog(BuildContext context, Function signOut) {
+    AwesomeDialog(
+      context: context,
+      dialogType: DialogType.WARNING,
+      animType: AnimType.SCALE,
+      title: 'Logout',
+      desc: 'Are you sure you want to logout?',
+      btnCancelOnPress: () {},
+      btnOkOnPress: () {
+        signOut();
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const AuthGate(),
+          ),
+        );
+      },
+    )..show();
+  }
 }
