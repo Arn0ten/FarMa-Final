@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
 class AuthService with ChangeNotifier {
@@ -112,4 +115,65 @@ class AuthService with ChangeNotifier {
       return [];
     }
   }
+  Future<String> uploadProfileImage(File imageFile) async {
+    try {
+      String uid = FirebaseAuth.instance.currentUser?.uid ?? "";
+
+      if (uid.isNotEmpty) {
+        // 1. Get a reference to the storage location
+        String imageId = DateTime.now().millisecondsSinceEpoch.toString();
+        String imagePath = 'user_profile_images/$uid/$imageId.jpg';
+        Reference storageReference = FirebaseStorage.instance.ref().child(imagePath);
+
+        // 2. Upload the file
+        UploadTask uploadTask = storageReference.putFile(imageFile);
+
+        // 3. Handle the upload result or URL
+        TaskSnapshot taskSnapshot = await uploadTask;
+        if (taskSnapshot.state == TaskState.success) {
+          String downloadUrl = await storageReference.getDownloadURL();
+
+          // 4. Update user's profile with the new image URL
+          await FirebaseAuth.instance.currentUser?.updatePhotoURL(downloadUrl);
+
+          print('Profile image uploaded successfully. URL: $downloadUrl');
+          return downloadUrl; // Return the download URL
+        } else {
+          throw ('Image upload failed');
+        }
+      } else {
+        print('User is not authenticated.');
+        throw ('User is not authenticated');
+      }
+    } catch (e) {
+      // Handle errors during the image upload
+      print('Error uploading profile image: $e');
+      throw e; // Rethrow the exception if needed
+    }
+  }
+  Future<String?> getUserProfileImageURL() async {
+    try {
+      String uid = FirebaseAuth.instance.currentUser?.uid ?? "";
+
+      if (uid.isNotEmpty) {
+        User? currentUser = FirebaseAuth.instance.currentUser;
+
+        if (currentUser != null) {
+          // Check if the user has a photo URL
+          if (currentUser.photoURL != null && currentUser.photoURL!.isNotEmpty) {
+            return currentUser.photoURL;
+          } else {
+            // If the user does not have a photo URL, you may choose to return a default URL or handle it as needed
+            return null;
+          }
+        }
+      }
+      return null;
+    } catch (e) {
+      print('Error getting user profile image URL: $e');
+      return null;
+    }
+  }
+
+
 }

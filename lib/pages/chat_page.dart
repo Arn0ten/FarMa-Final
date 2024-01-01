@@ -25,6 +25,14 @@ class _ChatPageState extends State<ChatPage> {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final ScrollController _scrollController = ScrollController();
 
+
+  @override
+  void initState() {
+    super.initState();
+    _chatService.addListener(() {
+      setState(() {}); // Rebuild the widget when unreadMessageCount changes
+    });
+  }
   void sendMessage() async {
     if (_messageController.text.isNotEmpty) {
       await _chatService.sendMessage(
@@ -37,10 +45,15 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
+    String title = widget.receiveruserEmail;
+    if (_chatService.unreadMessageCount > 0) {
+      title += ' (${_chatService.unreadMessageCount})';
+    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.green.shade50,
-        title: Text(widget.receiveruserEmail),
+        title: Text(title),
       ),
       body: Column(
         children: [
@@ -63,9 +76,7 @@ class _ChatPageState extends State<ChatPage> {
         if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         }
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
+
 
         WidgetsBinding.instance!.addPostFrameCallback((_) {
           _scrollController.animateTo(
@@ -112,10 +123,11 @@ class _ChatPageState extends State<ChatPage> {
               child: Row(
                 children: [
                   Expanded(
-                    child: MyTextField(
+                    child: TextField(
                       controller: _messageController,
-                      obscureText: false,
-                      hintText: 'Type a message',
+                      decoration: InputDecoration(
+                        hintText: 'Type a message',
+                      ),
                     ),
                   ),
                   IconButton(

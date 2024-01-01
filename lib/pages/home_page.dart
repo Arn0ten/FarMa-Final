@@ -10,6 +10,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../services/chat/chat_service.dart';
 import 'message_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -17,17 +18,19 @@ class HomePage extends StatefulWidget {
 
   final user = FirebaseAuth.instance.currentUser!;
 
+
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
   late String userFullName = '';
-
+  late ChatService _chatService; // Add this line
   @override
   void initState() {
     super.initState();
     loadUserData();
+    _chatService = ChatService(); // Instantiate ChatService
   }
 
   Future<void> loadUserData() async {
@@ -114,18 +117,18 @@ class _HomePageState extends State<HomePage> {
                 );
               },
               icon: badges.Badge(
-                badgeContent: const Text(
-                  '3',
+                badgeContent: Text(
+                  '${_chatService.unreadMessageCount}',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 12,
                   ),
                 ),
                 position: badges.BadgePosition.topEnd(top: -15, end: -12),
-                badgeStyle: const badges.BadgeStyle(
+                badgeStyle: badges.BadgeStyle(
                   badgeColor: Colors.green,
                 ),
-                child: const Icon(IconlyBroken.chat),
+                child: Icon(IconlyBroken.chat),
               ),
             ),
           ),
