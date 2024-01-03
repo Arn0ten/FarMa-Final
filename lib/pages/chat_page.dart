@@ -30,7 +30,9 @@ class _ChatPageState extends State<ChatPage> {
   void initState() {
     super.initState();
     _chatService.addListener(() {
-      setState(() {}); // Rebuild the widget when unreadMessageCount changes
+      setState(() {
+        // Rebuild the widget when unreadMessageCount changes
+      });
     });
   }
   void sendMessage() async {
@@ -46,7 +48,7 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     String title = widget.receiveruserEmail;
-    if (_chatService.unreadMessageCount > 0) {
+    if (_chatService != null && _chatService.unreadMessageCount > 0) {
       title += ' (${_chatService.unreadMessageCount})';
     }
 

@@ -1,6 +1,5 @@
 // product_post_page.dart
 import 'dart:io';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -25,9 +24,9 @@ class _ProductPostPageState extends State<ProductPostPage> {
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   final TextEditingController _unitController = TextEditingController();
-
   String _imagePath = '';
   final ImagePicker _imagePicker = ImagePicker();
+  String _deliveryMethod = 'Delivery';
 
   Future<void> _pickImage() async {
     final pickedFile = await _imagePicker.pickImage(source: ImageSource.gallery);
@@ -78,25 +77,34 @@ class _ProductPostPageState extends State<ProductPostPage> {
   }
 
 
-  void _validateAndSaveProduct() {
-    if (_validateForm(context)) {
-      _saveProduct();
-      // Navigate to the Explore page after successfully posting a product
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => HomePage(),
-        ),
-      );
+  // Inside _ProductPostPageState class
+  void _validateAndSaveProduct() async {
+    if (mounted && _validateForm(context)) {
+      await _saveProduct(_getDeliveryMethod()); // Make the method asynchronous
+      if (mounted) {
+        // Check mounted before calling setState
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomePage(),
+          ),
+        );
+      }
     }
   }
 
+  String _getDeliveryMethod() {
+    return _deliveryMethod;
+  }
 
-  // Inside _ProductPostPageState class
-  void _saveProduct() async {
+
+
+   _saveProduct(String deliveryMethod) async {
     try {
       // Upload the image and get the download URL
       final String imageUrl = await ProductService().uploadImage(File(_imagePath));
+      int tempAvailableQuantity = 10; // Replace with your actual variable or value
+      String tempLocation = 'Your Location'; // Replace with your actual variable or value
 
       // Get the current user from Firebase Authentication
       User? currentUser = FirebaseAuth.instance.currentUser;
@@ -117,10 +125,18 @@ class _ProductPostPageState extends State<ProductPostPage> {
           price: double.parse(_priceController.text),
           unit: _unitController.text,
           postedByUser: postedByUser,
+          deliveryMethod: _deliveryMethod,
+          availableQuantity: tempAvailableQuantity, // Replace with your actual variable or value
+          location: tempLocation, // Replace with your actual variable or value
         );
 
-        // Add the product to the database
-        await ProductService().addProduct(newProduct);
+// Add the product to the database
+        await ProductService().addProduct(
+          newProduct,
+          _deliveryMethod,
+          tempAvailableQuantity, // Pass the actual variable or value for availableQuantity
+          tempLocation, // Pass the actual variable or value for location
+        );
 
         // Clear the form fields after successful submission
         _nameController.clear();
@@ -139,15 +155,7 @@ class _ProductPostPageState extends State<ProductPostPage> {
     }
   }
 
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _descriptionController.dispose();
-    _priceController.dispose();
-    _unitController.dispose();
 
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -159,6 +167,12 @@ class _ProductPostPageState extends State<ProductPostPage> {
       imagePath: _imagePath,
       pickImage: _pickImage,
       postProduct: _validateAndSaveProduct,
+      updateDeliveryMethod: (method) {
+        setState(() {
+          _deliveryMethod = method;
+        });
+      },
+      selectedDeliveryMethod: _deliveryMethod,
     );
   }
 }

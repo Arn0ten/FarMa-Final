@@ -6,9 +6,11 @@ class Product {
   final double price;
   final String unit;
   final PostedByUser postedByUser;
-  int quantity; // Add quantity property
-  String? cartId; // Add cartId property
-
+  int quantity;
+  String? cartId;
+  String deliveryMethod; // New property
+  int availableQuantity; // New property
+  String location; // New property
   Product({
     required this.id,
     required this.name,
@@ -17,15 +19,17 @@ class Product {
     required this.price,
     required this.unit,
     required this.postedByUser,
-    this.quantity = 1, // Set default quantity to 1
-    this.cartId, // Initialize cartId
+    this.quantity = 1,
+    this.cartId,
+    required this.deliveryMethod,
+    required this.availableQuantity,
+    required this.location,
   });
 
   factory Product.fromMap(Map<String, dynamic>? map) {
     if (map == null) {
-      // If map is null, return a default instance or throw an exception
-      // You can modify this based on your requirements
       return Product(
+        // Default values or throw an exception based on your requirements
         id: '',
         name: '',
         description: '',
@@ -34,6 +38,9 @@ class Product {
         unit: '',
         postedByUser: PostedByUser(uid: '', email: ''),
         quantity: 1,
+        deliveryMethod: '',
+        availableQuantity: 0,
+        location: '',
         cartId: null,
       );
     }
@@ -47,7 +54,10 @@ class Product {
       unit: map['unit'] ?? '',
       postedByUser: PostedByUser.fromMap(map['postedByUser']),
       quantity: map['quantity'] ?? 1,
-      cartId: map['cartId'], // Set cartId from the map (it can be null)
+      deliveryMethod: map['deliveryMethod'] ?? '',
+      availableQuantity: map['availableQuantity'] ?? 0,
+      location: map['location'] ?? '',
+      cartId: map['cartId'],
     );
   }
 
@@ -60,11 +70,15 @@ class Product {
       'image': image,
       'unit': unit,
       'postedByUser': postedByUser.toMap(),
-      'quantity': quantity, // Include quantity in the map
-      'cartId': cartId, // Include cartId in the map
+      'quantity': quantity,
+      'cartId': cartId,
+      'deliveryMethod': deliveryMethod,
+      'availableQuantity': availableQuantity,
+      'location': location,
     };
   }
 }
+
 
 class PostedByUser {
   final String uid;

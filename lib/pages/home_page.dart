@@ -5,6 +5,7 @@ import 'package:agriplant/pages/product_post_page.dart';
 import 'package:agriplant/pages/profile_page.dart';
 import 'package:agriplant/widgets/drawer/drawer_content.dart';
 import 'package:badges/badges.dart' as badges;
+import 'package:badges/badges.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -18,20 +19,30 @@ class HomePage extends StatefulWidget {
 
   final user = FirebaseAuth.instance.currentUser!;
 
-
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
   late String userFullName = '';
-  late ChatService _chatService; // Add this line
+  late ChatService _chatService;
+
   @override
   void initState() {
     super.initState();
     loadUserData();
-    _chatService = ChatService(); // Instantiate ChatService
+    _chatService = ChatService();
+    _listenToUnreadMessages();
   }
+
+  void _listenToUnreadMessages() {
+    _chatService.addListener(() {
+      print('Unread messages count changed: ${_chatService.unreadMessageCount}');
+      setState(() {});
+    });
+  }
+
+
 
   Future<void> loadUserData() async {
     try {
@@ -59,9 +70,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   final pages = [
-     ExplorePage(),
-     BookmarkPage(),
-     CartPage(),
+    ExplorePage(),
+    BookmarkPage(),
+    CartPage(),
   ];
   int currentPageIndex = 0;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -69,17 +80,16 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final pages = [
-       ExplorePage(),
-       BookmarkPage(),
-       ProductPostPage(),
-       CartPage(),
+      ExplorePage(),
+      BookmarkPage(),
+      ProductPostPage(),
+      CartPage(),
       ProfilePage(userFullName: userFullName),
       // Pass userFullName to ProfilePage
     ];
     return Scaffold(
-
       key: _scaffoldKey,
-      drawer:  DrawerContent(userName: userFullName),
+      drawer: DrawerContent(userName: userFullName),
       appBar: AppBar(
         centerTitle: false,
         leading: IconButton.filledTonal(
@@ -124,14 +134,17 @@ class _HomePageState extends State<HomePage> {
                     fontSize: 12,
                   ),
                 ),
-                position: badges.BadgePosition.topEnd(top: -15, end: -12),
-                badgeStyle: badges.BadgeStyle(
+                position: BadgePosition.topEnd(top: -15, end: -12),
+                badgeStyle: BadgeStyle(
                   badgeColor: Colors.green,
                 ),
                 child: Icon(IconlyBroken.chat),
               ),
+
+
             ),
           ),
+
         ],
       ),
       body: pages[currentPageIndex],
@@ -140,7 +153,6 @@ class _HomePageState extends State<HomePage> {
         currentIndex: currentPageIndex,
         onTap: (index) {
           if (index == 5) {
-            // Handle the "Post" action
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -165,11 +177,15 @@ class _HomePageState extends State<HomePage> {
             activeIcon: Icon(IconlyBold.bookmark),
           ),
           BottomNavigationBarItem(
-            icon: Icon(IconlyLight.plus,
-              size: 40,),
+            icon: Icon(
+              IconlyLight.plus,
+              size: 40,
+            ),
             label: "Post",
-            activeIcon: Icon(IconlyBold.plus,
-            size: 40),
+            activeIcon: Icon(
+              IconlyBold.plus,
+              size: 40,
+            ),
           ),
           BottomNavigationBarItem(
             icon: Icon(IconlyLight.buy),

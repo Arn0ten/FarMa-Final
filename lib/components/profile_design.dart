@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import '../models/product.dart';
+import '../pages/edit_product_page.dart';
 import '../services/auth/auth_gate.dart';
 import '../services/auth/auth_service.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import '../pages/checkout_page.dart';
 import '../pages/orders_page.dart';
+import '../services/product/product_service.dart';
 
 class ProfileDesign {
   static Widget buildProfilePage({
@@ -96,7 +98,17 @@ class ProfileDesign {
                     ),
                     itemCount: snapshot.data!.length,
                     itemBuilder: (context, index) {
-                      return _buildProductCard(snapshot.data![index]);
+                      return _buildProductCard(
+                        snapshot.data![index],
+                            () {
+                          // Edit callback
+                          _navigateToEditProductPage(context, snapshot.data![index]);
+                        },
+                            () {
+                          // Delete callback
+                          _showDeleteConfirmationDialog(context, snapshot.data![index]);
+                        },
+                      );
                     },
                   );
                 } else if (snapshot.hasError) {
@@ -169,37 +181,57 @@ class ProfileDesign {
     );
   }
 
-  static Widget _buildProductCard(Product product) {
+  static Widget _buildProductCard(Product product, VoidCallback editCallback, VoidCallback deleteCallback) {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      child: ListTile(
-        title: Text(
-          product.name,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8.0),
-              child: Image.network(
-                product.image,
-                height: 100,
-                width: double.infinity,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return const Text('Error loading image');
-                },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          ListTile(
+            title: Text(
+              product.name,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
               ),
             ),
-            Text('Price: \₱${product.price?.toString() ?? 'N/A'}'),
-          ],
-        ),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8.0),
+                  child: Image.network(
+                    product.image,
+                    height: 100,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Text('Error loading image');
+                    },
+                  ),
+                ),
+                Text('Price: \₱${product.price?.toString() ?? 'N/A'}'),
+              ],
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              ElevatedButton(
+                onPressed: editCallback,
+                child: const Text('Edit'),
+              ),
+              ElevatedButton(
+                onPressed: deleteCallback,
+                style: ElevatedButton.styleFrom(primary: Colors.red),
+                child: const Text('Delete'),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
+
 
   static Widget _buildProfileImage(String imagePath) {
     return imagePath.isEmpty
@@ -296,5 +328,41 @@ class ProfileDesign {
         );
       },
     )..show();
+  }
+  static void _navigateToEditProductPage(BuildContext context, Product product) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditProductPage(product: product),
+      ),
+    );
+  }
+
+  static void _showDeleteConfirmationDialog(BuildContext context, Product product) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Delete Product'),
+          content: Text('Are you sure you want to delete this product?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close the dialog
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                // Implement logic to delete the product
+                ProductService().deleteProduct(product.id);
+                Navigator.pop(context); // Close the dialog
+              },
+              child: Text('Delete'),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

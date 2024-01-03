@@ -1,37 +1,46 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+
 import '../models/product.dart';
 import '../pages/product_details_page.dart';
+
+import 'package:flutter/material.dart';
+import '../models/product.dart';
 
 class ProductCard extends StatefulWidget {
   const ProductCard({
     Key? key,
     required this.product,
+    required this.actions,
   }) : super(key: key);
 
   final Product product;
+  final List<Widget> actions;
 
   @override
   State<ProductCard> createState() => _ProductCardState();
 }
-
 
 class _ProductCardState extends State<ProductCard> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final CollectionReference _bookmarksCollection =
   FirebaseFirestore.instance.collection('bookmarks');
   late bool isBookmarked = false; // Initialize with false
+  bool _mounted = false; // Add this line to track mounted state
 
   @override
   void initState() {
     super.initState();
+    _mounted = true; // Set to true when the widget is mounted
     // Initialize isBookmarked based on the stored bookmark status
     initBookmarkStatus();
   }
 
   Future<void> initBookmarkStatus() async {
+    if (!mounted) return; // Check mounted state before setState
+
     User? currentUser = _auth.currentUser;
 
     if (currentUser != null) {
@@ -42,22 +51,37 @@ class _ProductCardState extends State<ProductCard> {
             .where('userId', isEqualTo: currentUser.uid)
             .get();
 
-        setState(() {
-          isBookmarked = snapshot.docs.isNotEmpty;
-        });
+        if (mounted) {
+          // Check mounted before calling setState
+          setState(() {
+            isBookmarked = snapshot.docs.isNotEmpty;
+          });
+        }
       } catch (error) {
-        print('Error initializing bookmark status: $error');
+        if (mounted) {
+          // Check mounted before calling setState
+          print('Error initializing bookmark status: $error');
+        }
       }
     } else {
       // Handle the case when the user is not authenticated
-      print('User is not authenticated.');
+      if (mounted) {
+        // Check mounted before calling setState
+        print('User is not authenticated.');
+      }
     }
   }
+
+  @override
+  void dispose() {
+    _mounted = false; // Set to false when the widget is disposed
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // Navigate to product details page
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (_) => ProductDetailsPage(product: widget.product),
@@ -65,7 +89,7 @@ class _ProductCardState extends State<ProductCard> {
         );
       },
       child: Container(
-        height: 250, // Set an appropriate height for your card
+        height: 250,
         child: Card(
           elevation: 4,
           shape: RoundedRectangleBorder(
@@ -91,7 +115,7 @@ class _ProductCardState extends State<ProductCard> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      widget.product.name,
+                      widget.product.name ?? '',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
@@ -104,24 +128,29 @@ class _ProductCardState extends State<ProductCard> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Expanded(
-                          child: Text(
-                            '₱${widget.product.price.toStringAsFixed(2)} / ${widget.product.unit}',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.green,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '₱${widget.product.price.toStringAsFixed(2)} / ${widget.product.unit ?? ''}',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.green,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                widget.product.deliveryMethod ?? 'N/A',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.black54,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        IconButton(
-                          onPressed: () {
-                            toggleBookmark();
-                          },
-                          iconSize: 18,
-                          icon: isBookmarked
-                              ? const Icon(IconlyBold.bookmark)
-                              : const Icon(IconlyLight.bookmark),
-                        ),
+                        ...widget.actions, // Add this line
                       ],
                     ),
                   ],
@@ -205,7 +234,6 @@ class _ProductCardState extends State<ProductCard> {
         }
       } catch (error) {
         print('Error toggling bookmark: $error');
-
         // Handle the error as needed
       }
     } else {

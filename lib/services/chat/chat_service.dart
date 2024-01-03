@@ -8,6 +8,7 @@ class ChatService with ChangeNotifier {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+
   int unreadMessageCount = 0;
 
   Future<void> sendMessage(String receiverId, String message) async {
@@ -52,7 +53,8 @@ class ChatService with ChangeNotifier {
   }
 
   void resetUnreadMessageCount() {
-    unreadMessageCount = 0;
+    unreadMessageCount++;
     notifyListeners();
   }
+
 }

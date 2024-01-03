@@ -5,6 +5,10 @@ import '../../pages/all_products_page.dart';
 import '../../services/product/product_service.dart';
 
 class ExplorePageDesign {
+  static const double paddingValue = 16.0;
+  static const double borderRadiusValue = 15.0;
+  static const double fontSizeValue = 15.0;
+
   static Widget buildExplorePage(
       TextEditingController searchController,
       List<Product> searchResults,
@@ -14,84 +18,19 @@ class ExplorePageDesign {
       ) {
     return Scaffold(
       body: Container(
-        padding: const EdgeInsets.all(16.0),
-        color: Colors.white, // Set a light background color
+        padding: EdgeInsets.all(paddingValue),
+        color: Colors.white,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             SizedBox(height: 30),
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.grey.shade100, // Light grey background
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: TextField(
-                  controller: searchController,
-                  decoration: InputDecoration(
-                    hintText: "Search for products...",
-                    prefixIcon: Icon(Icons.search, color: Colors.grey),
-                    border: InputBorder.none,
-                  ),
-                  onChanged: (value) {
-                    searchFunction(value); // Call the search function
-                  },
-                ),
-              ),
-            ),
+            _buildSearchField(searchController, searchFunction),
             SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Explore Products",
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-                TextButton(
-                  onPressed: () {
-                    _navigateToAllProductsPage(context);
-                  },
-                  child: Text(
-                    "See All",
-                    style: TextStyle(
-                      color: Colors.green,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            _buildExploreSection(context),
             Expanded(
               child: Container(
                 margin: const EdgeInsets.symmetric(vertical: 10),
-                child: searchResults.isNotEmpty
-                    ? GridView.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 0.8,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                  ),
-                  itemCount: searchResults.length,
-                  itemBuilder: (context, index) {
-                    return ProductCard(product: searchResults[index]);
-                  },
-                )
-                    : Center(
-                  child: searchResults.isEmpty
-                      ? CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
-                  )
-                      : Text(
-                    '',
-
-                  ),
-                ),
+                child: _buildProductGrid(searchResults, context),
               ),
             ),
           ],
@@ -100,11 +39,96 @@ class ExplorePageDesign {
     );
   }
 
+  static Widget _buildSearchField(
+      TextEditingController searchController, Function(String) searchFunction) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(borderRadiusValue),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: paddingValue),
+        child: TextField(
+          controller: searchController,
+          decoration: InputDecoration(
+            hintText: "Search for products...",
+            prefixIcon: Icon(Icons.search, color: Colors.grey),
+            border: InputBorder.none,
+          ),
+          onChanged: searchFunction,
+        ),
+      ),
+    );
+  }
+
+  static Widget _buildExploreSection(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          "Explore Products",
+          style: TextStyle(
+            fontSize: fontSizeValue,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
+        TextButton(
+          onPressed: () {
+            _navigateToAllProductsPage(context);
+          },
+          child: Text(
+            "See All",
+            style: TextStyle(
+              color: Colors.green,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  static Widget _buildProductGrid(List<Product> searchResults, BuildContext context) {
+    return searchResults.isNotEmpty
+        ? GridView.builder(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 0.8,
+        crossAxisSpacing: 16,
+        mainAxisSpacing: 16,
+      ),
+      itemCount: searchResults.length,
+      itemBuilder: (context, index) {
+        return ProductCard(
+          product: searchResults[index],
+          actions: [], // Add an empty list or provide actions as needed
+        );
+      },
+    )
+        : Center(
+      child: searchResults.isEmpty
+          ? CircularProgressIndicator(
+        valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+      )
+          : _buildNoResultsText(),
+    );
+  }
+
+  static Widget _buildNoResultsText() {
+    return Text(
+      'No results found',
+      style: TextStyle(
+        fontSize: 16,
+        color: Colors.black54,
+      ),
+    );
+  }
+
   static void _navigateToAllProductsPage(BuildContext context) {
-    // Navigate to the page with all products
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => AllProductsPage()), // Replace with the actual page
+      MaterialPageRoute(builder: (context) => AllProductsPage()),
     );
   }
 }

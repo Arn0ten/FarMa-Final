@@ -35,7 +35,7 @@ class AllProductsPage extends StatelessWidget {
               ),
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
-                return ProductCard(product: snapshot.data![index]);
+                return ProductCard(product: snapshot.data![index], actions: [],);
               },
             );
           } else {
