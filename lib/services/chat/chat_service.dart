@@ -56,5 +56,35 @@ class ChatService with ChangeNotifier {
     unreadMessageCount++;
     notifyListeners();
   }
+  Future<String> getLastMessageText(String userId, String otherUserId) async {
+    try {
+      List<String> ids = [userId, otherUserId];
+      ids.sort();
+      String chatRoomId = ids.join('_');
+
+      QuerySnapshot messagesSnapshot = await _firestore
+          .collection('chat_rooms')
+          .doc(chatRoomId)
+          .collection('messages')
+          .orderBy('timestamp', descending: true)
+          .limit(1)
+          .get();
+
+      if (messagesSnapshot.docs.isNotEmpty) {
+        // Retrieve the last message text
+        return messagesSnapshot.docs.first['message'];
+      } else {
+        // If no messages are found, return 'No messages yet'
+        return 'No messages yet';
+      }
+    } catch (error) {
+      // Handle any errors during the process
+      print('Error fetching last message: $error');
+      return 'Error fetching last message';
+    }
+  }
+
+
+
 
 }

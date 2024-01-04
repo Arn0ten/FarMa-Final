@@ -4,9 +4,10 @@ import '../../models/product.dart';
 import '../services/cart/cart_service.dart';
 
 class CartItem extends StatefulWidget {
-  const CartItem({Key? key, required this.cartItem}) : super(key: key);
+  const CartItem({Key? key, required this.cartItem, required this.removeFromCart}) : super(key: key);
 
   final Product cartItem;
+  final Function(Product) removeFromCart;
 
   @override
   State<CartItem> createState() => _CartItemState();
@@ -36,8 +37,8 @@ class _CartItemState extends State<CartItem> {
         return true;
       },
       onDismissed: (DismissDirection direction) {
-        // Remove the item from the cart here
-        CartService().removeFromCart(widget.cartItem);
+        // Remove the item from the cart
+        widget.removeFromCart(widget.cartItem);
 
         // Show a snackbar to indicate the item has been removed
         ScaffoldMessenger.of(context).showSnackBar(
@@ -67,10 +68,12 @@ class _CartItemState extends State<CartItem> {
                     borderRadius: BorderRadius.circular(10),
                     image: DecorationImage(
                       fit: BoxFit.cover,
-                      image: AssetImage(widget.cartItem.image),
+                      image: _getImageProvider(widget.cartItem.image),
                     ),
                   ),
                 ),
+
+
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -140,5 +143,15 @@ class _CartItemState extends State<CartItem> {
         ),
       ),
     );
+  }
+  ImageProvider<Object> _getImageProvider(String imagePath) {
+    if (imagePath.startsWith('http')) {
+      return NetworkImage(imagePath);
+    } else if (imagePath.startsWith('assets/')) {
+      return AssetImage(imagePath);
+    } else {
+      String relativePath = imagePath.split('/cache/').last;
+      return AssetImage(relativePath);
+    }
   }
 }

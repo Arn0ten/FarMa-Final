@@ -25,7 +25,6 @@ class _ChatPageState extends State<ChatPage> {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final ScrollController _scrollController = ScrollController();
 
-
   @override
   void initState() {
     super.initState();
@@ -35,6 +34,7 @@ class _ChatPageState extends State<ChatPage> {
       });
     });
   }
+
   void sendMessage() async {
     if (_messageController.text.isNotEmpty) {
       await _chatService.sendMessage(
@@ -48,9 +48,6 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     String title = widget.receiveruserEmail;
-    if (_chatService != null && _chatService.unreadMessageCount > 0) {
-      title += ' (${_chatService.unreadMessageCount})';
-    }
 
     return Scaffold(
       appBar: AppBar(
@@ -72,13 +69,12 @@ class _ChatPageState extends State<ChatPage> {
     return StreamBuilder(
       stream: _chatService.getMessages(
         widget.receiveruserID,
-        _firebaseAuth.currentUser!.uid,
+        _firebaseAuth.currentUser?.uid ?? '',
       ),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         }
-
 
         WidgetsBinding.instance!.addPostFrameCallback((_) {
           _scrollController.animateTo(
@@ -88,20 +84,29 @@ class _ChatPageState extends State<ChatPage> {
           );
         });
 
-        return ListView(
-          controller: _scrollController,
-          padding: const EdgeInsets.all(8.0),
-          children: snapshot.data!.docs
-              .map((document) => _buildMessageItem(document))
-              .toList(),
-        );
+        if (snapshot.hasData) {
+          return ListView(
+            controller: _scrollController,
+            padding: const EdgeInsets.all(8.0),
+            children: snapshot.data!.docs
+                .map((document) => _buildMessageItem(document))
+                .toList(),
+          );
+        } else {
+          return const SizedBox(); // Placeholder for loading indicator
+        }
       },
     );
   }
 
   Widget _buildMessageItem(DocumentSnapshot document) {
-    Map<String, dynamic> data = document.data() as Map<String, dynamic>;
-    var isSender = data['senderId'] == _firebaseAuth.currentUser!.uid;
+    Map<String, dynamic>? data = document.data() as Map<String, dynamic>?;
+
+    if (data == null) {
+      return const SizedBox(); // Placeholder for handling null data
+    }
+
+    var isSender = data['senderId'] == _firebaseAuth.currentUser?.uid;
 
     return ChatBubble(
       senderEmail: data['senderEmail'],

@@ -20,7 +20,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
   @override
   void initState() {
     super.initState();
-    _checkoutPageDesign = CheckoutPageDesign(checkoutItems: widget.checkoutItems);
+    _checkoutPageDesign = CheckoutPageDesign(
+      context: context, // Pass the context here
+      checkoutItems: widget.checkoutItems,
+    );
   }
 
   @override

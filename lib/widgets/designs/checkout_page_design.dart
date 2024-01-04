@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import '../../models/product.dart';
 import '../../services/cart/cart_service.dart';
-import '../cart_item.dart';
+import '../cart_item.dart'; // Import the CartItem widget
 
 class CheckoutPageDesign {
   final List<Product> checkoutItems;
+  final BuildContext context; // Add the context parameter
 
-  CheckoutPageDesign({required this.checkoutItems});
+  CheckoutPageDesign({required this.checkoutItems, required this.context});
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,7 +53,7 @@ class CheckoutPageDesign {
         const SizedBox(height: 10),
         if (checkoutItems.isNotEmpty)
           ...checkoutItems.map(
-                (product) => CartItem(cartItem: product),
+                (product) => CartItem(cartItem: product, removeFromCart: _removeFromCart),
           )
         else
           const Text("No items in the checkout"),
@@ -103,7 +104,6 @@ class CheckoutPageDesign {
       ),
     );
   }
-}
 
   Future<void> _confirmPlaceOrder(BuildContext context) async {
     // Show a confirmation dialog using AwesomeDialog
@@ -158,3 +158,27 @@ class CheckoutPageDesign {
     return total.toStringAsFixed(2);
   }
 
+  void _removeFromCart(Product product) {
+    try {
+      // Implement the logic to remove the product from the cart
+      // You may call CartService().removeFromCart(product) or perform any other actions
+      CartService().removeFromCart(product);
+
+      // Show a SnackBar to notify that the item has been removed from the cart
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Item removed from cart'),
+        ),
+      );
+    } catch (e) {
+      // Handle any errors that might occur during the removal process
+      print('Error removing item from cart: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Error removing item from cart. Please try again.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+}

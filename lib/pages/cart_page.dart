@@ -24,6 +24,7 @@ class _CartPageState extends State<CartPage> {
   void initState() {
     super.initState();
     _cartPageDesign = CartPageDesign(
+      context: context, // Pass the context here
       ordersStream: OrderService().getOrdersStream(),
       cartItems: CartService().getCartItems(),
     );

@@ -79,10 +79,12 @@ class _ProductPostPageState extends State<ProductPostPage> {
 
   // Inside _ProductPostPageState class
   void _validateAndSaveProduct() async {
-    if (mounted && _validateForm(context)) {
-      await _saveProduct(_getDeliveryMethod()); // Make the method asynchronous
+    if (!mounted) return;
+
+    if (_validateForm(context)) {
+      await _saveProduct(_getDeliveryMethod());
+
       if (mounted) {
-        // Check mounted before calling setState
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -93,13 +95,14 @@ class _ProductPostPageState extends State<ProductPostPage> {
     }
   }
 
+
   String _getDeliveryMethod() {
     return _deliveryMethod;
   }
 
 
 
-   _saveProduct(String deliveryMethod) async {
+  _saveProduct(String deliveryMethod) async {
     try {
       // Upload the image and get the download URL
       final String imageUrl = await ProductService().uploadImage(File(_imagePath));
@@ -145,7 +148,12 @@ class _ProductPostPageState extends State<ProductPostPage> {
         _unitController.clear();
         _imagePath = '';
         setState(() {});
-      } else {
+      }
+      if (mounted) {
+        setState(() {
+          // Update the UI
+        });
+      }else {
         // Handle the case when the user is not authenticated
         print('User is not authenticated.');
       }

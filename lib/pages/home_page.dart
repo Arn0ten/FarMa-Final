@@ -127,14 +127,7 @@ class _HomePageState extends State<HomePage> {
                 );
               },
               icon: badges.Badge(
-                badgeContent: Text(
-                  '${_chatService.unreadMessageCount}',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                  ),
-                ),
-                position: BadgePosition.topEnd(top: -15, end: -12),
+                position: BadgePosition.topEnd(top: -7, end: -7),
                 badgeStyle: BadgeStyle(
                   badgeColor: Colors.green,
                 ),

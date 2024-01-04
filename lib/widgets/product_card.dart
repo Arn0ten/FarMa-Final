@@ -147,10 +147,18 @@ class _ProductCardState extends State<ProductCard> {
                                   color: Colors.black54,
                                 ),
                               ),
+
                             ],
                           ),
                         ),
                         ...widget.actions, // Add this line
+                        IconButton(
+                          onPressed: toggleBookmark,
+                          iconSize: 18,
+                          icon: isBookmarked
+                              ? const Icon(IconlyBold.bookmark)
+                              : const Icon(IconlyLight.bookmark),
+                        ),
                       ],
                     ),
                   ],
