@@ -22,6 +22,7 @@ dependencies:
   firebase_storage: ^11.5.3
   cached_network_image: ^3.3.0
   awesome_dialog: ^3.1.0
+  shared_preferences: ^2.2.2
 
 
 

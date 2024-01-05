@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:agriplant/widgets/product_card.dart';
 import '../../models/product.dart';
-import '../../pages/all_products_page.dart';
 import '../../services/product/product_service.dart';
 import 'edit_product_page.dart';
 
@@ -176,18 +175,6 @@ class _ExplorePageState extends State<ExplorePage> {
             color: Colors.black87,
           ),
         ),
-        TextButton(
-          onPressed: () {
-            _navigateToAllProductsPage(context);
-          },
-          child: Text(
-            "See All",
-            style: TextStyle(
-              color: Colors.green,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
       ],
     );
   }
@@ -228,11 +215,5 @@ class _ExplorePageState extends State<ExplorePage> {
     );
   }
 
-  void _navigateToAllProductsPage(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => AllProductsPage()),
-    );
-  }
 
 }

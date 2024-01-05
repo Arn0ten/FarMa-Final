@@ -1,4 +1,4 @@
-import 'dart:math';
+
 
 import 'package:flutter/material.dart';
 import 'package:agriplant/models/order.dart';
@@ -67,7 +67,7 @@ class OrderProduct extends StatelessWidget {
                             fontWeight: FontWeight.bold,
                           ),
                     ),
-                    Text("Qty: ${Random().nextInt(4) + 1}")
+                    Text("Qty: 3")
                   ],
                 )
               ],

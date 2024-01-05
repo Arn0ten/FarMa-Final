@@ -17,8 +17,10 @@ class ProductDetailsDesign extends StatefulWidget {
 
   final String receiverUserEmail;
   final String receiverUserId;
+  final String currentUserId; // Add this line
 
-  const ProductDetailsDesign({
+
+  const  ProductDetailsDesign({
     Key? key,
     required this.product,
     required this.showMore,
@@ -27,6 +29,7 @@ class ProductDetailsDesign extends StatefulWidget {
     required this.addingToCart,
     required this.receiverUserEmail,
     required this.receiverUserId,
+    required this.currentUserId, // Add this line
   }) : super(key: key);
 
   @override
@@ -91,6 +94,8 @@ class _ProductDetailsDesignState extends State<ProductDetailsDesign> {
 
   @override
   Widget build(BuildContext context) {
+    bool isCurrentUserProduct = widget.currentUserId == widget.product.postedByUser.uid;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.green,
@@ -133,7 +138,18 @@ class _ProductDetailsDesignState extends State<ProductDetailsDesign> {
                 ),
               ),
               const SizedBox(height: 5),
-
+              Row(
+                children: [
+                  Icon(Icons.location_on, size: 16, color: Colors.grey),
+                  const SizedBox(width: 4),  // Adjust the spacing between icon and text
+                  Text(
+                    widget.product.location,
+                    style: TextStyle(
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
               // Stock and Price
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -287,6 +303,7 @@ class _ProductDetailsDesignState extends State<ProductDetailsDesign> {
                                     addingToCart: false,
                                     receiverUserEmail: "",
                                     receiverUserId: "",
+                                    currentUserId: "",
                                   ),
                                 ),
                               );
@@ -314,23 +331,27 @@ class _ProductDetailsDesignState extends State<ProductDetailsDesign> {
               const SizedBox(height: 20),
 
               // Message Button Section
-              MessageButton(
-                receiverUserEmail: widget.receiverUserEmail,
-                receiverUserId: widget.receiverUserId,
-              ),
+              // Message Button Section
+              // Message Button Section
+              if (!isCurrentUserProduct)  // Only show if not the owner
+                MessageButton(
+                  receiverUserEmail: widget.receiverUserEmail,
+                  receiverUserId: widget.receiverUserId,
+                ),
               const SizedBox(height: 20),
 
               // Add to Cart Button
-              ElevatedButton.icon(
-                onPressed: widget.addingToCart ? null : _addToCart,
-                icon: const Icon(IconlyLight.bag2),
-                label: widget.addingToCart
-                    ? const CircularProgressIndicator()
-                    : const Text("Add to Cart"),
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(Colors.green),
+              if (!isCurrentUserProduct)  // Only show if not the owner
+                ElevatedButton.icon(
+                  onPressed: widget.addingToCart ? null : _addToCart,
+                  icon: const Icon(IconlyLight.bag2),
+                  label: widget.addingToCart
+                      ? const CircularProgressIndicator()
+                      : const Text("Add to Cart"),
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.green),
+                  ),
                 ),
-              ),
 
               const SizedBox(height: 20),
             ],

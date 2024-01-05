@@ -143,6 +143,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
         addingToCart: addingToCart,
         receiverUserEmail: widget.product.postedByUser.email,
         receiverUserId: widget.product.postedByUser.uid,
+        currentUserId: _auth.currentUser?.uid ?? "", // Add this line
       ),
     );
   }

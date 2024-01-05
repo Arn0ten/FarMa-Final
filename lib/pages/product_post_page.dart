@@ -27,6 +27,7 @@ class _ProductPostPageState extends State<ProductPostPage> {
   String _imagePath = '';
   final ImagePicker _imagePicker = ImagePicker();
   String _deliveryMethod = 'Delivery';
+  final TextEditingController _locationController = TextEditingController();
 
   Future<void> _pickImage() async {
     final pickedFile = await _imagePicker.pickImage(source: ImageSource.gallery);
@@ -58,7 +59,10 @@ class _ProductPostPageState extends State<ProductPostPage> {
       _showSnackBar(context, 'Unit field cannot be empty');
       return false;
     }
-
+    if (_locationController.text.isEmpty) {
+      _showSnackBar(context, 'Location field cannot be empty');
+      return false;
+    }
     if (_imagePath.isEmpty) {
       _showSnackBar(context, 'Please select an image');
       return false;
@@ -82,7 +86,7 @@ class _ProductPostPageState extends State<ProductPostPage> {
     if (!mounted) return;
 
     if (_validateForm(context)) {
-      await _saveProduct(_getDeliveryMethod());
+      await _saveProduct(_getDeliveryMethod(), _getLocation());
 
       if (mounted) {
         Navigator.pushReplacement(
@@ -95,6 +99,10 @@ class _ProductPostPageState extends State<ProductPostPage> {
     }
   }
 
+  String _getLocation() {
+    return _locationController.text;
+  }
+
 
   String _getDeliveryMethod() {
     return _deliveryMethod;
@@ -102,12 +110,12 @@ class _ProductPostPageState extends State<ProductPostPage> {
 
 
 
-  _saveProduct(String deliveryMethod) async {
+  _saveProduct(String deliveryMethod, String getLocation) async {
     try {
       // Upload the image and get the download URL
       final String imageUrl = await ProductService().uploadImage(File(_imagePath));
       int tempAvailableQuantity = 10; // Replace with your actual variable or value
-      String tempLocation = 'Your Location'; // Replace with your actual variable or value
+      String tempLocation = _getLocation(); // Use the user input from _locationController
 
       // Get the current user from Firebase Authentication
       User? currentUser = FirebaseAuth.instance.currentUser;
@@ -130,7 +138,7 @@ class _ProductPostPageState extends State<ProductPostPage> {
           postedByUser: postedByUser,
           deliveryMethod: _deliveryMethod,
           availableQuantity: tempAvailableQuantity, // Replace with your actual variable or value
-          location: tempLocation, // Replace with your actual variable or value
+          location: tempLocation,// Use tempLocation instead of location // Replace with your actual variable or value
         );
 
 // Add the product to the database
@@ -181,6 +189,7 @@ class _ProductPostPageState extends State<ProductPostPage> {
         });
       },
       selectedDeliveryMethod: _deliveryMethod,
+      locationController: _locationController,
     );
   }
 }

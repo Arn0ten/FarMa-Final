@@ -15,7 +15,9 @@ class CartService {
   String get currentUserUid => _auth.currentUser?.uid ?? "";
 
   // Generate a unique cart ID based on the user's UID
-  String get cartId => 'cart_$currentUserUid';
+  String get cartId => 'cart_${currentUserUid}';
+  static const String cartKey = 'cart';
+
 
   void addToCart(Product product, int quantity) {
     print("Adding to cart in CartService: ${product.name}");
@@ -26,7 +28,7 @@ class CartService {
     int index = cartItems.indexWhere((item) => item.id == product.id);
     if (index != -1) {
       // If the product is already in the cart, increase the quantity
-      _modifyQuantity(index, cartItems[index].quantity + quantity);
+      cartItems[index].quantity += quantity;
     } else {
       // If the product is not in the cart, add it with the specified quantity
       product.quantity = quantity;
@@ -41,13 +43,20 @@ class CartService {
     int index = cartItems.indexWhere((item) => item.id == product.id);
     if (index != -1) {
       // If the product is in the cart, decrease the quantity
-      _modifyQuantity(index, cartItems[index].quantity - 1);
+      if (cartItems[index].quantity > 1) {
+        cartItems[index].quantity -= 1;
+      } else {
+        // If the quantity is 1, remove the product from the cart
+        cartItems.removeAt(index);
+      }
     }
     print("Removed from cart in CartService successfully");
   }
 
   List<Product> getCartItems() {
-    // Filter cart items for the current user
+    // Use the cartId to filter cart items
+    // You may want to replace this with your actual logic to fetch items from a database
+    // For now, we are returning a copy of cartItems filtered by the cartId
     return cartItems.where((item) => item.cartId == cartId).toList();
   }
 
@@ -56,7 +65,7 @@ class CartService {
     int index = cartItems.indexWhere((item) => item.id == product.id);
     if (index != -1) {
       // If the product is in the cart, increase the quantity
-      _modifyQuantity(index, cartItems[index].quantity + 1);
+      cartItems[index].quantity += 1;
     }
   }
 
@@ -65,7 +74,7 @@ class CartService {
     int index = cartItems.indexWhere((item) => item.id == product.id);
     if (index != -1 && cartItems[index].quantity > 1) {
       // If the product is in the cart and the quantity is more than 1, decrease the quantity
-      _modifyQuantity(index, cartItems[index].quantity - 1);
+      cartItems[index].quantity -= 1;
     }
   }
 
@@ -74,13 +83,4 @@ class CartService {
     cartItems.removeWhere((item) => item.cartId == cartId);
   }
 
-  // Private method to modify the quantity and handle removal if quantity becomes zero
-  void _modifyQuantity(int index, int newQuantity) {
-    if (newQuantity > 0) {
-      cartItems[index].quantity = newQuantity;
-    } else {
-      cartItems.removeAt(index);
-    }
-  }
 }
-

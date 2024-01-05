@@ -3,7 +3,9 @@ import 'package:agriplant/pages/checkout_page.dart';
 import 'package:agriplant/pages/orders_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
-import 'package:agriplant/services/auth/auth_service.dart'; // Import your AuthService or the appropriate service
+import 'package:agriplant/services/auth/auth_service.dart';
+
+import '../../pages/about_us_page.dart'; // Import your AuthService or the appropriate service
 
 class DrawerContent extends StatelessWidget {
   final String userName;
@@ -59,18 +61,6 @@ class DrawerContent extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           ListTile(
-            title: const Text("My orders"),
-            leading: const Icon(IconlyLight.bag),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const OrdersPage(),
-                ),
-              );
-            },
-          ),
-          ListTile(
             title: const Text("My checkouts"),
             leading: const Icon(IconlyLight.bag2),
             onTap: () {
@@ -98,7 +88,14 @@ class DrawerContent extends StatelessWidget {
           ListTile(
             title: const Text("About us"),
             leading: const Icon(IconlyLight.infoSquare),
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AboutPage(),
+                ),
+              );
+            },
           ),
         ],
       ),

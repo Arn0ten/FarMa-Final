@@ -14,7 +14,7 @@ class ProductPostPageDesign extends StatelessWidget {
   final Function()? postProduct;
   final Function(String) updateDeliveryMethod;
   final String selectedDeliveryMethod;
-
+  final TextEditingController locationController;
   const ProductPostPageDesign({
     Key? key,
     required this.nameController,
@@ -26,6 +26,7 @@ class ProductPostPageDesign extends StatelessWidget {
     required this.postProduct,
     required this.updateDeliveryMethod,
     required this.selectedDeliveryMethod,
+    required this.locationController,
   }) : super(key: key);
 
   @override
@@ -67,6 +68,8 @@ class ProductPostPageDesign extends StatelessWidget {
             _buildTextField(priceController, 'Product Price:', prefixIcon: Icons.attach_money),
             const SizedBox(height: 15),
             _buildTextField(unitController, 'Product Unit:'),
+            const SizedBox(height: 15),
+            _buildTextField(locationController, 'Product Location:'),
             const SizedBox(height: 15),
             _buildDeliveryMethodDropdown(),
             const SizedBox(height: 15),

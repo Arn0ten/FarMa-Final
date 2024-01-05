@@ -5,6 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../services/auth/auth_service.dart';
+
 class ChatPage extends StatefulWidget {
   final String receiveruserEmail;
   final String receiveruserID;
@@ -107,13 +109,27 @@ class _ChatPageState extends State<ChatPage> {
     }
 
     var isSender = data['senderId'] == _firebaseAuth.currentUser?.uid;
+    String senderEmail = data['senderEmail'];
+    String senderUserId = data['senderId']; // Use senderId as senderUserId
 
-    return ChatBubble(
-      senderEmail: data['senderEmail'],
-      message: data['message'],
-      isSender: isSender,
+    return StreamBuilder<String?>(
+      stream: AuthService().getUserProfileImageURLStream(senderUserId),
+      builder: (context, snapshot) {
+        String senderProfileImageURL = snapshot.data ?? 'DEFAULT_IMAGE_URL';
+        // Replace 'DEFAULT_IMAGE_URL' with your actual default image URL or handle it as needed
+
+        return ChatBubble(
+          senderEmail: senderEmail,
+          message: data['message'],
+          isSender: isSender,
+          senderProfileImageURL: senderProfileImageURL,
+          senderUserId: senderUserId, // Pass senderUserId to ChatBubble
+        );
+      },
     );
   }
+
+
 
   Widget _buildMessageInput() {
     return Container(

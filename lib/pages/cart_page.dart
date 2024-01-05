@@ -35,8 +35,3 @@ class _CartPageState extends State<CartPage> {
     return _cartPageDesign.build(context);
   }
 }
-
-
-
-
-

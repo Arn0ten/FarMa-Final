@@ -19,7 +19,7 @@ class OrderDetailsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final orderTimelines = ['Processing', 'Picking', 'Shipping', 'Delivered'];
-    int activeStep = 2;
+    int activeStep = 0;
     return Scaffold(
       appBar: AppBar(
         title: const Text("Order Details"),
@@ -119,11 +119,11 @@ class OrderDetailsPage extends StatelessWidget {
                   const SizedBox(height: 5),
                    Row(
                     children: [
-                      Icon(IconlyLight.home, size: 15),
+                      Icon(IconlyLight.location, size: 15),
                       SizedBox(width: 5),
                       Expanded(
                         child: Text(
-                          "6844 Hall Spring Suite 134\n East Annabury, OK 42291",
+                          "Prk 11-A San Miguel Tagum City",
                         ),
                       ),
                     ],
@@ -135,7 +135,7 @@ class OrderDetailsPage extends StatelessWidget {
                       SizedBox(width: 5),
                       Expanded(
                         child: Text(
-                          "233 5447 51048",
+                          "09458938376",
                         ),
                       ),
                     ],
@@ -146,7 +146,7 @@ class OrderDetailsPage extends StatelessWidget {
                     children: [
                       Text("Payment method"),
                       Text(
-                        "Credit Card **1234",
+                        "Cash On Delivery",
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ],

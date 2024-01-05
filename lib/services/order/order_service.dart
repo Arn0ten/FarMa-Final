@@ -7,24 +7,27 @@ class OrderService {
 
   final CollectionReference _ordersCollection =
       FirebaseFirestore.instance.collection('orders');
+
+
+
   Future<void> placeOrder(List<Product> products) async {
-    // Implement your logic for placing an order, e.g., sending the order to a server
-    // You might want to create an order object and send it to your backend
-    // For simplicity, let's print the order details here
+    // Create an order object
+    final order = LocalOrder.Order(
+      id: 'your_order_id', // You can use a unique identifier for the order
+      products: products,
+      date: DateTime.now(),
+    );
 
-    print('Placing order with the following products:');
-    for (var product in products) {
-      print('- ${product.name}, Quantity: ${product.quantity}');
-    }
+    // Convert the order object to a map
+    final orderMap = order.toMap();
 
-    // Add your logic for handling the order placement, such as sending it to a server
-    // ...
+    // Add the order to the Firestore collection
+    await _ordersCollection.add(orderMap);
 
-    // For the sake of this example, let's simulate a delay (you might remove this in a real implementation)
-    await Future.delayed(Duration(seconds: 2));
-
+    // Print a message (you can replace this with your actual logic)
     print('Order placed successfully!');
   }
+
   Stream<List<LocalOrder.Order>> getOrdersStream() {
     return _ordersCollection.snapshots().map((snapshot) {
       return snapshot.docs.map((doc) {
@@ -39,7 +42,9 @@ class OrderService {
     });
   }
 
+
 }
+
 
 // Fetch orders from Firestore using the OrderService
 Stream<List<LocalOrder.Order>> ordersStream = OrderService().getOrdersStream();

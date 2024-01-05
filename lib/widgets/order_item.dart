@@ -12,8 +12,8 @@ class OrderItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final products = order.products.take(visibleProducts).toList();
-    final totalPrice = order.products
-        .fold(0.0, (previousValue, element) => previousValue + element.price);
+    final totalPrice = order.products.fold(
+        0.0, (previousValue, element) => previousValue + element.price);
     final theme = Theme.of(context);
     return Card(
       clipBehavior: Clip.antiAlias,
@@ -57,33 +57,34 @@ class OrderItem extends StatelessWidget {
             if (order.products.length > 1) const SizedBox(height: 10),
             if (order.products.length > 1)
               Center(
-                  child: TextButton.icon(
-                onPressed: () {
-                  showModalBottomSheet(
-                    context: context,
-                    showDragHandle: true,
-                    isScrollControlled: true,
-                    builder: (context) {
-                      return Container(
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.background,
-                        ),
-                        height: MediaQuery.of(context).size.height * 0.5,
-                        child: ListView.builder(
-                          padding: const EdgeInsets.all(14),
-                          itemCount: order.products.length,
-                          itemBuilder: (context, index) {
-                            final product = order.products[index];
-                            return OrderProduct(order: order, product: product);
-                          },
-                        ),
-                      );
-                    },
-                  );
-                },
-                icon: const Icon(IconlyBold.arrowRight),
-                label: const Text("View all"),
-              ))
+                child: TextButton.icon(
+                  onPressed: () {
+                    showModalBottomSheet(
+                      context: context,
+                      showDragHandle: true,
+                      isScrollControlled: true,
+                      builder: (context) {
+                        return Container(
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.background,
+                          ),
+                          height: MediaQuery.of(context).size.height * 0.5,
+                          child: ListView.builder(
+                            padding: const EdgeInsets.all(14),
+                            itemCount: order.products.length,
+                            itemBuilder: (context, index) {
+                              final product = order.products[index];
+                              return OrderProduct(order: order, product: product);
+                            },
+                          ),
+                        );
+                      },
+                    );
+                  },
+                  icon: const Icon(IconlyBold.arrowRight),
+                  label: const Text("View all"),
+                ),
+              ),
           ],
         ),
       ),

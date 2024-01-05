@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import '../../models/product.dart';
+import '../../pages/order_succes_page.dart';
 import '../../services/cart/cart_service.dart';
 import '../cart_item.dart'; // Import the CartItem widget
 
@@ -129,14 +130,12 @@ class CheckoutPageDesign {
       // Optionally, you can clear the cart after placing the order
       CartService().clearCart();
 
-      // Show a SnackBar to notify that checkout was successful
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Order placed successfully!'),
+      // Optionally, you can navigate to a success page or perform any other action
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => OrderSuccessPage(), // Replace with your success page
         ),
       );
-
-      // Optionally, you can navigate to a success page or perform any other action
     } catch (e) {
       // Handle the error (e.g., show an error message)
       print('Error placing order: $e');
@@ -148,6 +147,7 @@ class CheckoutPageDesign {
       );
     }
   }
+
 
   String calculateTotal(List<Product> items) {
     // Calculate the total amount based on the checkout items
