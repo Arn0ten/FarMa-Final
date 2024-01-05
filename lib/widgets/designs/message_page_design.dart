@@ -61,7 +61,6 @@ class MessagePageDesign {
               builder: (context, snapshot) {
                 if (snapshot.hasData && snapshot.data != null) {
                   return CircleAvatar(
-                    backgroundColor: Colors.green,
                     backgroundImage: NetworkImage(snapshot.data!),
                     // Add additional properties or adjustments if needed
                   );
