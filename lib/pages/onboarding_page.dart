@@ -32,10 +32,11 @@ class _SplashScreenState extends State<SplashScreen>
 
     Timer(
       Duration(seconds: 1),
-          () {
+      () {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
-            builder: (context) => AuthGate(), // aha mo navigate ig human sa loading...
+            builder: (context) =>
+                AuthGate(), // aha mo navigate ig human sa loading...
           ),
         );
       },

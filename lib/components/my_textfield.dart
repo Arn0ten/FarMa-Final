@@ -22,7 +22,7 @@ class MyTextField extends StatelessWidget {
         controller: controller,
         obscureText: obscureText,
         decoration: InputDecoration(
-          enabledBorder:  OutlineInputBorder(
+          enabledBorder: OutlineInputBorder(
             borderSide: BorderSide(color: Colors.grey.shade400),
           ),
           focusedBorder: OutlineInputBorder(
@@ -34,9 +34,9 @@ class MyTextField extends StatelessWidget {
           hintStyle: TextStyle(color: Colors.grey[500]),
           prefixIcon: prefixIcon != null
               ? Icon(
-            prefixIcon,
-            color: Colors.grey[500],
-          )
+                  prefixIcon,
+                  color: Colors.grey[500],
+                )
               : null,
         ),
       ),

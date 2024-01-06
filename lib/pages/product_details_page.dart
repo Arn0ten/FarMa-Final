@@ -12,7 +12,6 @@ class ProductDetailsPage extends StatefulWidget {
   const ProductDetailsPage({
     Key? key,
     required this.product,
-
   }) : super(key: key);
 
   final Product product;
@@ -24,40 +23,35 @@ class ProductDetailsPage extends StatefulWidget {
 class _ProductDetailsPageState extends State<ProductDetailsPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final CollectionReference _bookmarksCollection =
-  FirebaseFirestore.instance.collection('bookmarks');
+      FirebaseFirestore.instance.collection('bookmarks');
   late TapGestureRecognizer readMoreGestureRecognizer;
   bool showMore = false;
-  bool addingToCart = false; // Track whether the product is being added to the cart
-  bool isBookmarked = false; // Variable to track bookmark status
+  bool addingToCart = false;
+  bool isBookmarked = false;
   int quantity = 1;
 
   void addToCart() {
-    // Set state to trigger UI changes and show loading indicator
     setState(() {
       addingToCart = true;
     });
 
-    // Add the product to the cart with the current quantity
     CartService().addToCart(widget.product, quantity);
 
-    // Simulate a delay to show the loading indicator
     Future.delayed(const Duration(seconds: 2), () {
-      // Reset addingToCart after the delay
       setState(() {
         addingToCart = false;
-        // Display a snackbar message when the product is added to the cart
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Product added to cart'),
             duration: Duration(seconds: 1),
           ),
         );
-        // Toggle the bookmark status after adding to the cart
+
         toggleBookmark();
       });
     });
   }
-
 
   void toggleBookmark() {
     setState(() {
@@ -72,7 +66,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     if (currentUser != null) {
       try {
         if (isBookmarked) {
-          // Remove bookmark
           await _bookmarksCollection
               .where('productId', isEqualTo: widget.product.id)
               .where('userId', isEqualTo: currentUser.uid)
@@ -83,41 +76,35 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
             }
           });
 
-          // Show AwesomeDialog
           AwesomeDialog(
             context: context,
             dialogType: DialogType.SUCCES,
             animType: AnimType.SCALE,
             title: 'Bookmark Removed',
             desc: 'Product has been removed from bookmarks.',
-            btnOkText: 'OK', // Add the OK button
-            btnOkOnPress: () {}, // Add the action for the OK button
+            btnOkText: 'OK',
+            btnOkOnPress: () {},
           )..show();
         } else {
-          // Add bookmark
           await _bookmarksCollection.add({
             'productId': widget.product.id,
             'userId': currentUser.uid,
           });
 
-          // Show AwesomeDialog
           AwesomeDialog(
             context: context,
             dialogType: DialogType.SUCCES,
             animType: AnimType.SCALE,
             title: 'Bookmark Added',
             desc: 'Product has been added to bookmarks.',
-            btnOkText: 'OK', // Add the OK button
-            btnOkOnPress: () {}, // Add the action for the OK button
+            btnOkText: 'OK',
+            btnOkOnPress: () {},
           )..show();
         }
       } catch (error) {
         print('Error toggling bookmark: $error');
-
-        // Handle the error as needed
       }
     } else {
-      // Handle the case when the user is not authenticated
       print('User is not authenticated.');
     }
   }
@@ -144,7 +131,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
         addingToCart: addingToCart,
         receiverUserEmail: widget.product.postedByUser.email,
         receiverUserId: widget.product.postedByUser.uid,
-        currentUserId: _auth.currentUser?.uid ?? "", // Add this line
+        currentUserId: _auth.currentUser?.uid ?? "",
       ),
     );
   }
@@ -153,7 +140,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     return AppBar(
       title: const Text("Details"),
       actions: [
-        // Inside ProductDetailsPage build method
         StreamBuilder(
           stream: _bookmarksCollection
               .where('productId', isEqualTo: widget.product.id)

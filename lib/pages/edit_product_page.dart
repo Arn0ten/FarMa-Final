@@ -1,4 +1,3 @@
-// edit_product_page.dart
 import 'package:flutter/material.dart';
 import '../../models/product.dart';
 import '../../services/product/product_service.dart';

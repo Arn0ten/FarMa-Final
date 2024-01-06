@@ -13,15 +13,12 @@ import '../components/profile_design.dart';
 import '../services/auth/auth_service.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({Key? key, required String userFullName})
-      : super(key: key);
+  const ProfilePage({Key? key, required String userFullName}) : super(key: key);
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
 }
 
-
-// Inside the _ProfilePageState class
 class _ProfilePageState extends State<ProfilePage> {
   final currentUser = FirebaseAuth.instance.currentUser!;
   late ProductService _productService;
@@ -41,8 +38,8 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _pickImage() async {
-    final pickedFile = await _imagePicker.pickImage(
-        source: ImageSource.gallery);
+    final pickedFile =
+        await _imagePicker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
       setState(() {
@@ -54,26 +51,21 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<void> _uploadImage() async {
     if (_imagePath != null && _imagePath!.isNotEmpty) {
       try {
-        // Assuming AuthService has a method for uploading the user's profile image
         await Provider.of<AuthService>(context, listen: false)
             .uploadProfileImage(File(_imagePath!));
 
-        // Update the UI without waiting for the upload to complete
         String? newImageUrl =
-        await Provider.of<AuthService>(context, listen: false)
-            .getUserProfileImageURL();
+            await Provider.of<AuthService>(context, listen: false)
+                .getUserProfileImageURL();
 
-        // Check if newImageUrl is not null before updating _imagePath
         if (newImageUrl != null) {
           setState(() {
             _imagePath = newImageUrl;
           });
         } else {
-          // Handle the case when newImageUrl is null (optional)
           print('Error: Profile image URL is null after upload.');
         }
       } catch (e) {
-        // Handle the error, e.g., show an error message
         print('Error uploading profile image: $e');
       }
     }
@@ -88,8 +80,7 @@ class _ProfilePageState extends State<ProfilePage> {
       desc: 'Are you sure you want to proceed?',
       btnCancelOnPress: () {},
       btnOkOnPress: action,
-    )
-      ..show();
+    )..show();
   }
 
   Future<void> _pickAndUploadImage(bool isCamera) async {
@@ -112,7 +103,6 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-
   Future<void> _showImageSourceModal() async {
     showModalBottomSheet(
       context: context,
@@ -124,16 +114,16 @@ class _ProfilePageState extends State<ProfilePage> {
                 leading: Icon(Icons.camera),
                 title: Text('Take a Photo'),
                 onTap: () {
-                  Navigator.of(context).pop(); // Close the modal
-                  _pickAndUploadImage(true); // Use camera
+                  Navigator.of(context).pop();
+                  _pickAndUploadImage(true);
                 },
               ),
               ListTile(
                 leading: Icon(Icons.image),
                 title: Text('Choose from Gallery'),
                 onTap: () {
-                  Navigator.of(context).pop(); // Close the modal
-                  _pickAndUploadImage(false); // Use gallery
+                  Navigator.of(context).pop();
+                  _pickAndUploadImage(false);
                 },
               ),
             ],
@@ -143,20 +133,20 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: StreamBuilder<DocumentSnapshot>(
-        stream: FirebaseFirestore.instance.collection("Users").doc(
-            currentUser.email!).snapshots(),
+        stream: FirebaseFirestore.instance
+            .collection("Users")
+            .doc(currentUser.email!)
+            .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final userData = snapshot.data!.data() as Map<String, dynamic>;
 
-            // Fetch the user's products stream
-            final userProductsStream = _productService.getUserProducts(
-                currentUser.uid);
+            final userProductsStream =
+                _productService.getUserProducts(currentUser.uid);
 
             return ProfileDesign.buildProfilePage(
               context: context,
@@ -165,7 +155,6 @@ class _ProfilePageState extends State<ProfilePage> {
               userProducts: userProductsStream,
               pickImage: () => _showImageSourceModal(),
               uploadImage: () => _pickAndUploadImage(true),
-              // Default to camera
               imagePath: _imagePath,
             );
           } else if (snapshot.hasError) {

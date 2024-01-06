@@ -5,7 +5,6 @@ import '../../services/product/product_service.dart';
 import 'edit_product_page.dart';
 
 class ExplorePage extends StatefulWidget {
-
   const ExplorePage({Key? key}) : super(key: key);
 
   @override
@@ -37,7 +36,6 @@ class _ExplorePageState extends State<ExplorePage> {
     }
   }
 
-
   void updateSearchResults() {
     searchProducts(_searchController.text);
   }
@@ -45,10 +43,10 @@ class _ExplorePageState extends State<ExplorePage> {
   void searchProducts(String query) {
     List<Product> filteredResults = allProducts
         .where((product) =>
-        product.name.toLowerCase().contains(query.toLowerCase()))
+            product.name.toLowerCase().contains(query.toLowerCase()))
         .toList();
 
-    print("Filtered Results: $filteredResults"); // Add this line
+    print("Filtered Results: $filteredResults");
 
     setState(() {
       searchResults = filteredResults.isNotEmpty ? filteredResults : [];
@@ -62,7 +60,6 @@ class _ExplorePageState extends State<ExplorePage> {
       }
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -88,6 +85,7 @@ class _ExplorePageState extends State<ExplorePage> {
       ),
     );
   }
+
   void _navigateToEditProductPage(BuildContext context, Product product) {
     Navigator.push(
       context,
@@ -107,13 +105,13 @@ class _ExplorePageState extends State<ExplorePage> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.pop(context); // Close the dialog
+                Navigator.pop(context);
               },
               child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
-                Navigator.pop(context); // Close the dialog
+                Navigator.pop(context);
                 _deleteProduct(product);
               },
               child: const Text('Delete'),
@@ -126,21 +124,20 @@ class _ExplorePageState extends State<ExplorePage> {
 
   void _deleteProduct(Product product) async {
     try {
-      // Use ProductService to delete the product
       await ProductService().deleteProduct(product.id);
-      // Optionally, update the UI to reflect the deletion
+
       setState(() {
         searchResults.remove(product);
       });
     } catch (error) {
       print('Error deleting product: $error');
-      // Handle the error as needed
     }
   }
+
   Widget _buildSearchField(
-      TextEditingController searchController,
-      Function(String) searchFunction,
-      ) {
+    TextEditingController searchController,
+    Function(String) searchFunction,
+  ) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.grey.shade100,
@@ -182,27 +179,27 @@ class _ExplorePageState extends State<ExplorePage> {
   Widget _buildProductGrid(List<Product> searchResults, BuildContext context) {
     return searchResults.isNotEmpty
         ? GridView.builder(
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: 0.8,
-        crossAxisSpacing: 16,
-        mainAxisSpacing: 16,
-      ),
-      itemCount: searchResults.length,
-      itemBuilder: (context, index) {
-        return ProductCard(
-          product: searchResults[index],
-          actions: [], // Add an empty list or provide actions as needed
-        );
-      },
-    )
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              childAspectRatio: 0.8,
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
+            ),
+            itemCount: searchResults.length,
+            itemBuilder: (context, index) {
+              return ProductCard(
+                product: searchResults[index],
+                actions: [],
+              );
+            },
+          )
         : Center(
-      child: searchResults.isEmpty
-          ? CircularProgressIndicator(
-        valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
-      )
-          : _buildNoResultsText(),
-    );
+            child: searchResults.isEmpty
+                ? CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+                  )
+                : _buildNoResultsText(),
+          );
   }
 
   Widget _buildNoResultsText() {
@@ -214,6 +211,4 @@ class _ExplorePageState extends State<ExplorePage> {
       ),
     );
   }
-
-
 }

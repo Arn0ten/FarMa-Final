@@ -3,11 +3,11 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import '../../models/product.dart';
 import '../../pages/order_succes_page.dart';
 import '../../services/cart/cart_service.dart';
-import '../cart_item.dart'; // Import the CartItem widget
+import '../cart_item.dart';
 
 class CheckoutPageDesign {
   final List<Product> checkoutItems;
-  final BuildContext context; // Add the context parameter
+  final BuildContext context;
 
   CheckoutPageDesign({required this.checkoutItems, required this.context});
 
@@ -54,7 +54,8 @@ class CheckoutPageDesign {
         const SizedBox(height: 10),
         if (checkoutItems.isNotEmpty)
           ...checkoutItems.map(
-                (product) => CartItem(cartItem: product, removeFromCart: _removeFromCart),
+            (product) =>
+                CartItem(cartItem: product, removeFromCart: _removeFromCart),
           )
         else
           const Text("No items in the checkout"),
@@ -107,7 +108,6 @@ class CheckoutPageDesign {
   }
 
   Future<void> _confirmPlaceOrder(BuildContext context) async {
-    // Show a confirmation dialog using AwesomeDialog
     AwesomeDialog(
       context: context,
       dialogType: DialogType.INFO,
@@ -123,21 +123,13 @@ class CheckoutPageDesign {
 
   Future<void> _placeOrder(BuildContext context) async {
     try {
-      // Implement the logic to place the order or perform other checkout actions
-      // For example, you can call a method in OrderService to place the order.
-      // await OrderService().placeOrder(checkoutItems);
-
-      // Optionally, you can clear the cart after placing the order
       CartService().clearCart();
-
-      // Optionally, you can navigate to a success page or perform any other action
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (context) => OrderSuccessPage(), // Replace with your success page
+          builder: (context) => OrderSuccessPage(),
         ),
       );
     } catch (e) {
-      // Handle the error (e.g., show an error message)
       print('Error placing order: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -148,9 +140,7 @@ class CheckoutPageDesign {
     }
   }
 
-
   String calculateTotal(List<Product> items) {
-    // Calculate the total amount based on the checkout items
     double total = 0.0;
     for (var item in items) {
       total += item.price * item.quantity;
@@ -160,22 +150,18 @@ class CheckoutPageDesign {
 
   void _removeFromCart(Product product) {
     try {
-      // Implement the logic to remove the product from the cart
-      // You may call CartService().removeFromCart(product) or perform any other actions
       CartService().removeFromCart(product);
-
-      // Show a SnackBar to notify that the item has been removed from the cart
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text('Item removed from cart'),
         ),
       );
     } catch (e) {
-      // Handle any errors that might occur during the removal process
       print('Error removing item from cart: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Error removing item from cart. Please try again.'),
+          content:
+              const Text('Error removing item from cart. Please try again.'),
           backgroundColor: Colors.red,
         ),
       );

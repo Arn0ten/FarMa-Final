@@ -1,30 +1,23 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../../models/order.dart' as LocalOrder; // Import your local Order class
+import '../../models/order.dart' as LocalOrder;
 import '../../models/product.dart';
 
 class OrderService {
-
   final CollectionReference _ordersCollection =
       FirebaseFirestore.instance.collection('orders');
 
-
-
   Future<void> placeOrder(List<Product> products) async {
-    // Create an order object
     final order = LocalOrder.Order(
-      id: 'your_order_id', // You can use a unique identifier for the order
+      id: 'your_order_id',
       products: products,
       date: DateTime.now(),
     );
 
-    // Convert the order object to a map
     final orderMap = order.toMap();
 
-    // Add the order to the Firestore collection
     await _ordersCollection.add(orderMap);
 
-    // Print a message (you can replace this with your actual logic)
     print('Order placed successfully!');
   }
 
@@ -41,10 +34,6 @@ class OrderService {
       }).toList();
     });
   }
-
-
 }
 
-
-// Fetch orders from Firestore using the OrderService
 Stream<List<LocalOrder.Order>> ordersStream = OrderService().getOrdersStream();

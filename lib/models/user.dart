@@ -14,7 +14,6 @@ class User {
       uid: map['uid'] ?? '',
       email: map['email'] ?? '',
       displayName: map['displayName'] ?? '',
-      // Add other User properties as needed
     );
   }
 
@@ -23,7 +22,6 @@ class User {
       'uid': uid,
       'email': email,
       'displayName': displayName,
-      // Add other User properties as needed
     };
   }
 }

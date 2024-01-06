@@ -1,13 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
 import '../../models/message.dart';
 
 class ChatService with ChangeNotifier {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
 
   int unreadMessageCount = 0;
 
@@ -34,7 +32,6 @@ class ChatService with ChangeNotifier {
         .collection('messages')
         .add(newMessage.toMap());
 
-    // Update unreadMessageCount when a new message is sent
     unreadMessageCount++;
     notifyListeners();
   }
@@ -56,6 +53,7 @@ class ChatService with ChangeNotifier {
     unreadMessageCount++;
     notifyListeners();
   }
+
   Future<String> getLastMessageText(String userId, String otherUserId) async {
     try {
       List<String> ids = [userId, otherUserId];
@@ -71,20 +69,13 @@ class ChatService with ChangeNotifier {
           .get();
 
       if (messagesSnapshot.docs.isNotEmpty) {
-        // Retrieve the last message text
         return messagesSnapshot.docs.first['message'];
       } else {
-        // If no messages are found, return 'No messages yet'
         return 'No messages yet';
       }
     } catch (error) {
-      // Handle any errors during the process
       print('Error fetching last message: $error');
       return 'Error fetching last message';
     }
   }
-
-
-
-
 }

@@ -8,9 +8,9 @@ class Product {
   final PostedByUser postedByUser;
   int quantity;
   String? cartId;
-  String deliveryMethod; // New property
-  int availableQuantity; // New property
-  String location; // New property
+  String deliveryMethod;
+  int availableQuantity;
+  String location;
   Product({
     required this.id,
     required this.name,
@@ -29,7 +29,7 @@ class Product {
   factory Product.fromMap(Map<String, dynamic>? map) {
     if (map == null) {
       return Product(
-        // Default values or throw an exception based on your requirements
+
         id: '',
         name: '',
         description: '',
@@ -79,7 +79,6 @@ class Product {
   }
 }
 
-
 class PostedByUser {
   final String uid;
   final String email;
@@ -103,4 +102,3 @@ class PostedByUser {
     };
   }
 }
-

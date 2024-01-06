@@ -1,4 +1,3 @@
-// product_post_page.dart
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +9,6 @@ import '../services/product/product_service.dart';
 import '../widgets/designs/product_post_design.dart';
 import 'explore_page.dart';
 import 'home_page.dart';
-
 
 class ProductPostPage extends StatefulWidget {
   const ProductPostPage({Key? key}) : super(key: key);
@@ -30,7 +28,8 @@ class _ProductPostPageState extends State<ProductPostPage> {
   final TextEditingController _locationController = TextEditingController();
 
   Future<void> _pickImage() async {
-    final pickedFile = await _imagePicker.pickImage(source: ImageSource.gallery);
+    final pickedFile =
+        await _imagePicker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
       setState(() {
@@ -50,7 +49,8 @@ class _ProductPostPageState extends State<ProductPostPage> {
       return false;
     }
 
-    if (_priceController.text.isEmpty || double.tryParse(_priceController.text) == null) {
+    if (_priceController.text.isEmpty ||
+        double.tryParse(_priceController.text) == null) {
       _showSnackBar(context, 'Invalid price');
       return false;
     }
@@ -80,8 +80,6 @@ class _ProductPostPageState extends State<ProductPostPage> {
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
-
-  // Inside _ProductPostPageState class
   void _validateAndSaveProduct() async {
     if (!mounted) return;
 
@@ -103,31 +101,25 @@ class _ProductPostPageState extends State<ProductPostPage> {
     return _locationController.text;
   }
 
-
   String _getDeliveryMethod() {
     return _deliveryMethod;
   }
 
-
-
   _saveProduct(String deliveryMethod, String getLocation) async {
     try {
-      // Upload the image and get the download URL
-      final String imageUrl = await ProductService().uploadImage(File(_imagePath));
-      int tempAvailableQuantity = 10; // Replace with your actual variable or value
-      String tempLocation = _getLocation(); // Use the user input from _locationController
+      final String imageUrl =
+          await ProductService().uploadImage(File(_imagePath));
+      int tempAvailableQuantity = 10;
+      String tempLocation = _getLocation();
 
-      // Get the current user from Firebase Authentication
       User? currentUser = FirebaseAuth.instance.currentUser;
 
       if (currentUser != null) {
-        // Create a PostedByUser instance
         PostedByUser postedByUser = PostedByUser(
           uid: currentUser.uid,
           email: currentUser.email ?? '',
         );
 
-        // Create a Product instance with the necessary information
         Product newProduct = Product(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
           name: _nameController.text,
@@ -137,39 +129,32 @@ class _ProductPostPageState extends State<ProductPostPage> {
           unit: _unitController.text,
           postedByUser: postedByUser,
           deliveryMethod: _deliveryMethod,
-          availableQuantity: tempAvailableQuantity, // Replace with your actual variable or value
-          location: tempLocation,// Use tempLocation instead of location // Replace with your actual variable or value
+          availableQuantity: tempAvailableQuantity,
+          location: tempLocation,
         );
 
-// Add the product to the database
+        // Add the product to the database
         await ProductService().addProduct(
           newProduct,
           _deliveryMethod,
-          tempAvailableQuantity, // Pass the actual variable or value for availableQuantity
-          tempLocation, // Pass the actual variable or value for location
+          tempAvailableQuantity,
+          tempLocation,
         );
 
-        // Clear the form fields after successful submission
         _nameController.clear();
         _descriptionController.clear();
         _priceController.clear();
         _unitController.clear();
         _imagePath = '';
         setState(() {});
-        // Show a Snackbar indicating success
         _showSnackBar(context, 'Product posted successfully');
       }
     } catch (e) {
-      // Handle error
       print('Failed to add product: $e');
 
-      // Show a Snackbar indicating failure
       _showSnackBar(context, 'Failed to post product');
     }
   }
-
-
-
 
   @override
   Widget build(BuildContext context) {

@@ -37,12 +37,11 @@ class _HomePageState extends State<HomePage> {
 
   void _listenToUnreadMessages() {
     _chatService.addListener(() {
-      print('Unread messages count changed: ${_chatService.unreadMessageCount}');
+      print(
+          'Unread messages count changed: ${_chatService.unreadMessageCount}');
       setState(() {});
     });
   }
-
-
 
   Future<void> loadUserData() async {
     try {
@@ -85,7 +84,6 @@ class _HomePageState extends State<HomePage> {
       ProductPostPage(),
       CartPage(),
       ProfilePage(userFullName: userFullName),
-      // Pass userFullName to ProfilePage
     ];
     return Scaffold(
       key: _scaffoldKey,
@@ -133,11 +131,8 @@ class _HomePageState extends State<HomePage> {
                 ),
                 child: Icon(IconlyBroken.chat),
               ),
-
-
             ),
           ),
-
         ],
       ),
       body: pages[currentPageIndex],

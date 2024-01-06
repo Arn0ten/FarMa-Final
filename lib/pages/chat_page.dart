@@ -1,12 +1,10 @@
 import 'dart:async';
-
 import 'package:agriplant/widgets/chat_bubble.dart';
 import 'package:agriplant/components/my_textfield.dart';
 import 'package:agriplant/services/chat/chat_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
 import '../services/auth/auth_service.dart';
 
 class ChatPage extends StatefulWidget {
@@ -28,20 +26,19 @@ class _ChatPageState extends State<ChatPage> {
   final ChatService _chatService = ChatService();
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final ScrollController _scrollController = ScrollController();
-  final StreamController<bool> _newMessageController = StreamController<bool>.broadcast();
+  final StreamController<bool> _newMessageController =
+      StreamController<bool>.broadcast();
 
   @override
   void initState() {
     super.initState();
     _chatService.addListener(() {
-      // Notify the widget that a new message has arrived
       _newMessageController.add(true);
     });
   }
 
   @override
   void dispose() {
-    // Close the stream controller when the widget is disposed
     _newMessageController.close();
     super.dispose();
   }
@@ -52,14 +49,11 @@ class _ChatPageState extends State<ChatPage> {
         widget.receiveruserID,
         _messageController.text,
       );
-
-      // Clear the text field and trigger a rebuild
       setState(() {
         _messageController.clear();
       });
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -93,7 +87,6 @@ class _ChatPageState extends State<ChatPage> {
         }
 
         WidgetsBinding.instance!.addPostFrameCallback((_) {
-          // Scroll down when a new message arrives
           if (_scrollController.hasClients) {
             _scrollController.animateTo(
               _scrollController.position.maxScrollExtent,
@@ -112,7 +105,7 @@ class _ChatPageState extends State<ChatPage> {
                 .toList(),
           );
         } else {
-          return const SizedBox(); // Placeholder for loading indicator
+          return const SizedBox();
         }
       },
     );
@@ -122,13 +115,13 @@ class _ChatPageState extends State<ChatPage> {
     Map<String, dynamic>? data = document.data() as Map<String, dynamic>?;
 
     if (data == null) {
-      return const SizedBox(); // Placeholder for handling null data
+      return const SizedBox();
     }
 
     var isSender = data['senderId'] == _firebaseAuth.currentUser?.uid;
     String senderEmail = data['senderEmail'];
     String senderUserId = data['senderId'];
-    Timestamp timestamp = data['timestamp']; // Assuming 'timestamp' is the field in Firestore
+    Timestamp timestamp = data['timestamp'];
 
     return StreamBuilder<String?>(
       stream: AuthService().getUserProfileImageURLStream(senderUserId),
@@ -146,7 +139,6 @@ class _ChatPageState extends State<ChatPage> {
       },
     );
   }
-
 
   Widget _buildMessageInput() {
     return Container(

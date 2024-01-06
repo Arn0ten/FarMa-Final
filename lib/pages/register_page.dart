@@ -36,9 +36,7 @@ class _RegisterPageState extends State<RegisterPage> {
     super.dispose();
   }
 
-//sign user up
   void signUp() async {
-    // Check if password and confirm password match
     if (passwordController.text != confirmPasswordController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -46,29 +44,27 @@ class _RegisterPageState extends State<RegisterPage> {
           duration: Duration(seconds: 3),
         ),
       );
-      return; // Stop the registration process if passwords don't match
+      return;
     }
     final authService = Provider.of<AuthService>(context, listen: false);
 
-    // Passwords match, proceed with user registration
     try {
       await authService.signUpWithEmailAndPassword(
-          emailController.text,
-          passwordController.text,
-         fullNameController.text.trim(),
-          addressController.text.trim(),
-          int.parse(ageController.text.trim()),
-          int.parse(contactNumberController.text.trim()),
-          );
-
-      }catch (e){
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString()),
-          ),
-        );
-      }
+        emailController.text,
+        passwordController.text,
+        fullNameController.text.trim(),
+        addressController.text.trim(),
+        int.parse(ageController.text.trim()),
+        int.parse(contactNumberController.text.trim()),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
     }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,8 +77,6 @@ class _RegisterPageState extends State<RegisterPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const SizedBox(height: 50),
-
-                // Let's create!
                 Text(
                   "Let's create!",
                   style: GoogleFonts.bebasNeue(
@@ -90,86 +84,61 @@ class _RegisterPageState extends State<RegisterPage> {
                     fontSize: 25,
                   ),
                 ),
-
                 const SizedBox(height: 10),
-
-                // fullname textfield
                 MyTextField(
                   controller: fullNameController,
                   hintText: 'Full name',
                   obscureText: false,
                   prefixIcon: IconlyLight.profile,
                 ),
-
                 const SizedBox(height: 10),
-
-                // age textfield
                 MyTextField(
                   controller: ageController,
                   hintText: 'Age',
                   obscureText: false,
                   prefixIcon: IconlyLight.calendar,
                 ),
-
                 const SizedBox(height: 10),
-
-                // address textfield
                 MyTextField(
                   controller: addressController,
                   hintText: 'Address',
                   obscureText: false,
                   prefixIcon: IconlyLight.location,
                 ),
-
                 const SizedBox(height: 10),
-
-                // contact number textfield
                 MyTextField(
                   controller: contactNumberController,
                   hintText: 'Contact number',
                   obscureText: false,
                   prefixIcon: IconlyLight.call,
                 ),
-
                 const SizedBox(height: 10),
-
-                // username textfield
                 MyTextField(
                   controller: emailController,
                   hintText: 'Email',
                   obscureText: false,
                   prefixIcon: IconlyLight.message,
                 ),
-
                 const SizedBox(height: 10),
-
-                // password textfield
                 MyTextField(
                   controller: passwordController,
                   hintText: 'Password',
                   obscureText: true,
                   prefixIcon: IconlyLight.lock,
                 ),
-
                 const SizedBox(height: 10),
-
                 MyTextField(
                   controller: confirmPasswordController,
                   hintText: 'Confirm Password',
                   obscureText: true,
                   prefixIcon: IconlyLight.lock,
                 ),
-
                 const SizedBox(height: 25),
-
-                // sign in button
                 MyButton(
                   onTap: signUp,
                   text: 'Create account',
                 ),
-
                 const SizedBox(height: 100),
-
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

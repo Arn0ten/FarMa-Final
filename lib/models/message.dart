@@ -15,7 +15,7 @@ class Message {
     required this.timestamp,
   });
 
-  ///map
+
   Map<String, dynamic> toMap() {
     return {
       'senderId': senderId,
@@ -25,6 +25,7 @@ class Message {
       'timestamp': timestamp,
     };
   }
+
   factory Message.fromMap(Map<String, dynamic> map) {
     return Message(
       senderId: map['senderId'],
@@ -35,4 +36,3 @@ class Message {
     );
   }
 }
-

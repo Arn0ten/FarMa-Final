@@ -11,9 +11,12 @@ import '../order_item.dart';
 class CartPageDesign {
   final Stream<List<LocalOrder.Order>> ordersStream;
   final List<Product> cartItems;
-  final BuildContext context; // Add the context parameter
+  final BuildContext context;
 
-  CartPageDesign({required this.ordersStream, required this.cartItems,required this.context});
+  CartPageDesign(
+      {required this.ordersStream,
+      required this.cartItems,
+      required this.context});
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,7 +74,7 @@ class CartPageDesign {
           ),
           const SizedBox(height: 10),
           ...orders.map(
-                (order) => Padding(
+            (order) => Padding(
               padding: const EdgeInsets.only(bottom: 5),
               child: OrderItem(order: order),
             ),
@@ -98,7 +101,10 @@ class CartPageDesign {
         const SizedBox(height: 10),
         if (cartItems.isNotEmpty)
           ...cartItems.map(
-                (product) => CartItem(cartItem: product,removeFromCart: _removeFromCart,),
+            (product) => CartItem(
+              cartItem: product,
+              removeFromCart: _removeFromCart,
+            ),
           )
         else
           const Center(child: Text('No items in the cart')),
@@ -149,7 +155,8 @@ class CartPageDesign {
     }
   }
 
-  Future<void> _handleCheckout(List<Product> cartItems, BuildContext context) async {
+  Future<void> _handleCheckout(
+      List<Product> cartItems, BuildContext context) async {
     await OrderService().placeOrder(cartItems);
 
     AwesomeDialog(
@@ -168,24 +175,21 @@ class CartPageDesign {
       },
     )..show();
   }
+
   void _removeFromCart(Product product) {
     try {
-      // Implement the logic to remove the product from the cart
-      // You may call CartService().removeFromCart(product) or perform any other actions
       CartService().removeFromCart(product);
-
-      // Show a SnackBar to notify that the item has been removed from the cart
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text('Item removed from cart'),
         ),
       );
     } catch (e) {
-      // Handle any errors that might occur during the removal process
       print('Error removing item from cart: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Error removing item from cart. Please try again.'),
+          content:
+              const Text('Error removing item from cart. Please try again.'),
           backgroundColor: Colors.red,
         ),
       );

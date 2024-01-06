@@ -9,18 +9,17 @@ class MyTextBox extends StatelessWidget {
     super.key,
     required this.text,
     required this.sectionName,
-
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration:  BoxDecoration(
+      decoration: BoxDecoration(
         color: Colors.grey.shade200,
         borderRadius: BorderRadius.circular(8),
       ),
-      padding: const EdgeInsets.only(left: 15, bottom: 2, right: 16,top: 2),
-      margin: const EdgeInsets.only(left: 20, right: 20,top: 5),
+      padding: const EdgeInsets.only(left: 15, bottom: 2, right: 16, top: 2),
+      margin: const EdgeInsets.only(left: 20, right: 20, top: 5),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -31,12 +30,9 @@ class MyTextBox extends StatelessWidget {
                 sectionName,
                 style: TextStyle(color: Colors.grey),
               ),
-              IconButton(
-                  onPressed: (){},
-                  icon: Icon(Icons.settings)),
+              IconButton(onPressed: () {}, icon: Icon(Icons.settings)),
             ],
           ),
-
           Text(text),
         ],
       ),

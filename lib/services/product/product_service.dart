@@ -1,4 +1,3 @@
-// product_service.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:agriplant/models/product.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -25,10 +24,9 @@ class ProductService {
           price: data['price'].toDouble(),
           unit: data['unit'],
           postedByUser: PostedByUser.fromMap(data['postedByUser']),
-          deliveryMethod: data['deliveryMethod'] ?? '', // Handle null
-          availableQuantity: data['availableQuantity'] ?? 0, // Handle null
-          location: data['location'] ?? '', // Handle null
-
+          deliveryMethod: data['deliveryMethod'] ?? '',
+          availableQuantity: data['availableQuantity'] ?? 0,
+          location: data['location'] ?? '',
         ));
       });
 
@@ -38,7 +36,13 @@ class ProductService {
       throw e;
     }
   }
-  Future<void> addProduct(Product product, String deliveryMethod, int availableQuantity, String location) async {
+
+  Future<void> addProduct(
+    Product product,
+    String deliveryMethod,
+    int availableQuantity,
+    String location,
+  ) async {
     try {
       User? currentUser = FirebaseAuth.instance.currentUser;
 
@@ -73,9 +77,6 @@ class ProductService {
     }
   }
 
-
-
-
   Future<bool> doesProductExist(String productName) async {
     try {
       QuerySnapshot<Object?> snapshot = await _productsCollection
@@ -103,9 +104,9 @@ class ProductService {
           price: data['price'].toDouble(),
           unit: data['unit'],
           postedByUser: PostedByUser.fromMap(data['postedByUser']),
-          deliveryMethod: data['deliveryMethod'] ?? '', // Handle null
-          availableQuantity: data['availableQuantity'] ?? 0, // Handle null
-          location: data['location'] ?? '', // Handle null
+          deliveryMethod: data['deliveryMethod'] ?? '',
+          availableQuantity: data['availableQuantity'] ?? 0,
+          location: data['location'] ?? '',
         );
       }).toList();
     });
@@ -143,9 +144,9 @@ class ProductService {
           description: data['description'],
           image: data['image'],
           postedByUser: PostedByUser.fromMap(data['postedByUser']),
-          deliveryMethod: data['deliveryMethod'] ?? '', // Handle null
-          availableQuantity: data['availableQuantity'] ?? 0, // Handle null
-          location: data['location'] ?? '', // Handle null
+          deliveryMethod: data['deliveryMethod'] ?? '',
+          availableQuantity: data['availableQuantity'] ?? 0,
+          location: data['location'] ?? '',
         );
       }).toList();
     } catch (e) {
@@ -159,7 +160,7 @@ class ProductService {
       String imageId = DateTime.now().millisecondsSinceEpoch.toString();
 
       Reference storageReference =
-      _storage.ref().child('product_images/$imageId.jpg');
+          _storage.ref().child('product_images/$imageId.jpg');
 
       UploadTask uploadTask = storageReference.putFile(imageFile);
 
@@ -194,9 +195,9 @@ class ProductService {
             price: data['price'].toDouble(),
             unit: data['unit'],
             postedByUser: PostedByUser.fromMap(data['postedByUser']),
-            deliveryMethod: data['deliveryMethod'] ?? '', // Handle null
-            availableQuantity: data['availableQuantity'] ?? 0, // Handle null
-            location: data['location'] ?? '', // Handle null
+            deliveryMethod: data['deliveryMethod'] ?? '',
+            availableQuantity: data['availableQuantity'] ?? 0,
+            location: data['location'] ?? '',
           );
         }).toList();
       });
@@ -206,13 +207,11 @@ class ProductService {
     }
   }
 
-  // New method to search products based on a query
-  // product_service.dart
-    Future<List<Product>> searchProducts(String query) async {
+  Future<List<Product>> searchProducts(String query) async {
     try {
       QuerySnapshot<Object?> snapshot = await _productsCollection
           .where('name', isEqualTo: query.toLowerCase())
-          .limit(1) // Limit to one result since names are unique
+          .limit(1)
           .get();
 
       return snapshot.docs.map((doc) {
@@ -226,9 +225,9 @@ class ProductService {
           description: data['description'],
           image: data['image'],
           postedByUser: PostedByUser.fromMap(data['postedByUser']),
-          deliveryMethod: data['deliveryMethod'] ?? '', // Handle null
-          availableQuantity: data['availableQuantity'] ?? 0, // Handle null
-          location: data['location'] ?? '', // Handle null
+          deliveryMethod: data['deliveryMethod'] ?? '',
+          availableQuantity: data['availableQuantity'] ?? 0,
+          location: data['location'] ?? '',
         );
       }).toList();
     } catch (e) {
@@ -236,12 +235,11 @@ class ProductService {
       throw e;
     }
   }
+
   Future<void> updateProduct(Product updatedProduct) async {
     try {
-      // Reference to the document of the updated product
       DocumentReference productRef = _productsCollection.doc(updatedProduct.id);
 
-      // Update specific fields of the document
       await productRef.update({
         'name': updatedProduct.name,
         'description': updatedProduct.description,
@@ -255,13 +253,13 @@ class ProductService {
         },
         'deliveryMethod': updatedProduct.deliveryMethod,
         'location': updatedProduct.location,
-        // Add other fields as needed
       });
     } catch (e) {
       print('Error updating product: $e');
       throw e;
     }
   }
+
   Future<void> deleteProduct(String productId) async {
     try {
       await _productsCollection.doc(productId).delete();
@@ -270,5 +268,4 @@ class ProductService {
       throw e;
     }
   }
-
 }

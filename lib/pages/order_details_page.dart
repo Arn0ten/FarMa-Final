@@ -5,8 +5,6 @@ import 'package:easy_stepper/easy_stepper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 
-
-
 class OrderDetailsPage extends StatelessWidget {
   const OrderDetailsPage({
     Key? key,
@@ -25,7 +23,6 @@ class OrderDetailsPage extends StatelessWidget {
         title: const Text("Order Details"),
       ),
       body: ListView(
-
         padding: const EdgeInsets.all(16),
         children: [
           EasyStepper(
@@ -117,7 +114,7 @@ class OrderDetailsPage extends StatelessWidget {
                         ?.copyWith(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 5),
-                   Row(
+                  Row(
                     children: [
                       Icon(IconlyLight.location, size: 15),
                       SizedBox(width: 5),
@@ -129,7 +126,7 @@ class OrderDetailsPage extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 5),
-                   Row(
+                  Row(
                     children: [
                       Icon(IconlyLight.call, size: 15),
                       SizedBox(width: 5),
@@ -141,7 +138,7 @@ class OrderDetailsPage extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 25),
-                   Row(
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text("Payment method"),

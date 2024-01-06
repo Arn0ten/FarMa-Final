@@ -21,7 +21,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
   void initState() {
     super.initState();
     _checkoutPageDesign = CheckoutPageDesign(
-      context: context, // Pass the context here
+      context: context,
       checkoutItems: widget.checkoutItems,
     );
   }

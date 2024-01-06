@@ -2,7 +2,7 @@ import 'dart:math';
 import 'package:agriplant/widgets/order_item.dart';
 import 'package:flutter/material.dart';
 import '../models/order.dart';
-import '../models/product.dart';  // Import the Product class
+import '../models/product.dart';
 
 class OrdersPage extends StatelessWidget {
   const OrdersPage({Key? key});
@@ -31,14 +31,13 @@ class OrdersPage extends StatelessWidget {
         body: TabBarView(
           children: List.generate(
             tabs.length,
-                (index) {
-              // Assuming you have a list of orders for each tab
+            (index) {
               final List<Order> orders = getOrdersForTab(index);
               return ListView(
                 padding: const EdgeInsets.all(16),
                 children: List.generate(
                   orders.length,
-                      (index) {
+                  (index) {
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 10),
                       child: OrderItem(order: orders[index]),
@@ -53,9 +52,7 @@ class OrdersPage extends StatelessWidget {
     );
   }
 
-  // Replace this function with your actual data source
   List<Order> getOrdersForTab(int tabIndex) {
-    // TODO: Implement logic to get orders based on the tab index
     return [];
   }
 }

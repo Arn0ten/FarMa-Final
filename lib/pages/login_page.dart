@@ -1,4 +1,3 @@
-
 import 'package:agriplant/components/my_button.dart';
 import 'package:agriplant/components/my_textfield.dart';
 import 'package:agriplant/services/auth/auth_service.dart';
@@ -10,6 +9,7 @@ import 'package:provider/provider.dart';
 
 class LogInPage extends StatefulWidget {
   final Function()? onTap;
+
   LogInPage({super.key, required this.onTap});
 
   @override
@@ -17,11 +17,9 @@ class LogInPage extends StatefulWidget {
 }
 
 class _LogInPageState extends State<LogInPage> {
-  /// text editing controllers
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
-  /// sign user in method
   void signUserIn() async {
     showDialog(
       context: context,
@@ -40,7 +38,8 @@ class _LogInPageState extends State<LogInPage> {
       String errorMessage = 'Wrong email or password. Please try again.';
 
       if (e.code == 'user-not-found') {
-        errorMessage = 'Account not found. Please check your email or register.';
+        errorMessage =
+            'Account not found. Please check your email or register.';
       } else if (e.code == 'wrong-password') {
         errorMessage = 'Incorrect password. Please double-check and try again.';
       }
@@ -54,7 +53,6 @@ class _LogInPageState extends State<LogInPage> {
     }
     Navigator.pop(context);
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -76,8 +74,7 @@ class _LogInPageState extends State<LogInPage> {
 
                 const SizedBox(height: 25),
 
-                // welcome back, you've been missed!
-                 Text(
+                Text(
                   'Welcome to FarMa!',
                   style: GoogleFonts.bebasNeue(
                     color: Colors.black,
@@ -130,7 +127,6 @@ class _LogInPageState extends State<LogInPage> {
                 ),
 
                 const SizedBox(height: 50),
-
 
                 // not a member? register now
                 Row(

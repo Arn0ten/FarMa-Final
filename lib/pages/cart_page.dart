@@ -4,9 +4,9 @@ import '../services/cart/cart_service.dart';
 import '../services/order/order_service.dart';
 import '../widgets/designs/cart_page_design.dart';
 import '../widgets/order_item.dart';
-import '../models/product.dart'; // Import the Product class
+import '../models/product.dart';
 import '../models/order.dart' as LocalOrder;
-import 'checkout_page.dart'; // Import your local Order class and use an alias
+import 'checkout_page.dart';
 
 class CartPage extends StatefulWidget {
   const CartPage({Key? key}) : super(key: key);
