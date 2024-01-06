@@ -9,6 +9,50 @@ class AuthService with ChangeNotifier {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+
+  Future<void> updateUserAge(String userId, int newAge) async {
+    try {
+      await _firestore.collection('Users').doc(userId).update({'age': newAge});
+    } catch (e) {
+      print('Error updating user age: $e');
+      throw e;
+    }
+  }
+
+  Future<void> updateUserAddress(String userId, String newAddress) async {
+    try {
+      await _firestore.collection('Users').doc(userId).update({'address': newAddress});
+    } catch (e) {
+      print('Error updating user address: $e');
+      throw e;
+    }
+  }
+  Future<void> updateUserEmail(String userId, int newEmail) async {
+    try {
+      await _firestore.collection('Users').doc(userId).update({'email': newEmail});
+    } catch (e) {
+      print('Error updating user email: $e');
+      throw e;
+    }
+  }
+  Future<void> updateUserFullName(String userId, int newNewUserFullname) async {
+    try {
+      await _firestore.collection('Users').doc(userId).update({'fullName': newNewUserFullname});
+    } catch (e) {
+      print('Error updating user fullname: $e');
+      throw e;
+    }
+  }
+  Future<void> updateUserContactNumber(String userId, int newContactNumber) async {
+    try {
+      await _firestore.collection('Users').doc(userId).update({'contactNumber': newContactNumber});
+    } catch (e) {
+      print('Error updating user contact number: $e');
+      throw e;
+    }
+  }
+
+
   Future<UserCredential> signInWithEmailAndPassword(
       String email, String password) async {
     try {

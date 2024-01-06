@@ -232,11 +232,7 @@ class _ProductCardState extends State<ProductCard> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Bookmark Added'),
-              duration: Duration(seconds: 2), // Adjust the duration as needed
-              action: SnackBarAction(
-                label: 'OK',
-                onPressed: () {},
-              ),
+              duration: Duration(seconds: 1), // Adjust the duration as needed
             ),
           );
         }

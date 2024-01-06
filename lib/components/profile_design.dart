@@ -78,11 +78,91 @@
             ),
             const SizedBox(height: 30),
             _buildExpansionTile('My details', [
-              _buildDetailCard('Email', userData['email'], IconlyLight.message),
-              _buildDetailCard('Full Name', userData['fullName'], IconlyLight.user2),
-              _buildDetailCard('Age', userData['age'].toString(), IconlyLight.calendar),
-              _buildDetailCard('Address', userData['address'], IconlyLight.location),
-              _buildDetailCard('Contact Number', userData['contactNumber'].toString(), IconlyLight.call),
+              _buildDetailCardEditable(
+                'Email',
+                userData['email'],
+                IconlyLight.message,
+                    () {
+                  _showEditDialog(context, 'Email', userData['email'], (newValue) async {
+                    final userId = AuthService().getCurrentUserId();
+                    if (userId != null) {
+                      await AuthService().updateUserEmail(userId, newValue as int);
+                      // Optionally, update the UI with the new email
+                      // setState(() {
+                      //   userData['email'] = newValue;
+                      // });
+                    }
+                  });
+                },
+              ),
+              _buildDetailCardEditable(
+                'Full Name',
+                userData['fullName'],
+                IconlyLight.user2,
+                    () {
+                  _showEditDialog(context, 'Full Name', userData['fullName'], (newValue) async {
+                    final userId = AuthService().getCurrentUserId();
+                    if (userId != null) {
+                      await AuthService().updateUserFullName(userId, newValue as int);
+                      // Optionally, update the UI with the new full name
+                      // setState(() {
+                      //   userData['fullName'] = newValue;
+                      // });
+                    }
+                  });
+                },
+              ),
+              _buildDetailCardEditable(
+                'Age',
+                userData['age'].toString(),
+                IconlyLight.calendar,
+                    () {
+                  _showEditDialog(context, 'Age', userData['age'].toString(), (newValue) async {
+                    final userId = AuthService().getCurrentUserId();
+                    if (userId != null) {
+                      await AuthService().updateUserAge(userId, int.parse(newValue));
+                      // Optionally, update the UI with the new age
+                      // setState(() {
+                      //   userData['age'] = int.parse(newValue);
+                      // });
+                    }
+                  });
+                },
+              ),
+              _buildDetailCardEditable(
+                'Address',
+                userData['address'],
+                IconlyLight.location,
+                    () {
+                  _showEditDialog(context, 'Address', userData['address'], (newValue) async {
+                    final userId = AuthService().getCurrentUserId();
+                    if (userId != null) {
+                      await AuthService().updateUserAddress(userId, newValue);
+                      // Optionally, update the UI with the new address
+                      // setState(() {
+                      //   userData['address'] = newValue;
+                      // });
+                    }
+                  });
+                },
+              ),
+              _buildDetailCardEditable(
+                'Contact Number',
+                userData['contactNumber'].toString(),
+                IconlyLight.call,
+                    () {
+                  _showEditDialog(context, 'Contact Number', userData['contactNumber'].toString(), (newValue) async {
+                    final userId = AuthService().getCurrentUserId();
+                    if (userId != null) {
+                      await AuthService().updateUserContactNumber(userId, int.parse(newValue));
+                      // Optionally, update the UI with the new contact number
+                      // setState(() {
+                      //   userData['contactNumber'] = int.parse(newValue);
+                      // });
+                    }
+                  });
+                },
+              ),
             ]),
             const SizedBox(height: 30),
             _buildExpansionTile('My products', [
@@ -304,9 +384,9 @@
       );
     }
 
-    static Future<void> _pickAndUploadImage(
+    static void _pickAndUploadImage(
         VoidCallback pickImage,
-        BuildContext context, // Add this line
+        BuildContext context,
         ) async {
       final picker = ImagePicker();
       final pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -331,6 +411,7 @@
         }
       }
     }
+
 
 
     static void _updateProfileImage(File imageFile) {}
@@ -396,10 +477,19 @@
                 child: Text('Cancel'),
               ),
               TextButton(
-                onPressed: () {
+                onPressed: () async {
                   // Implement logic to delete the product
                   ProductService().deleteProduct(product.id);
-                  Navigator.pop(context); // Close the dialog
+
+                  // Close the dialog
+                  Navigator.pop(context);
+
+                  // Show a Snackbar indicating success
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Product deleted successfully.'),
+                    ),
+                  );
                 },
                 child: Text('Delete'),
               ),
@@ -408,4 +498,85 @@
         },
       );
     }
+
+    static Widget _buildDetailCardEditable(
+        String title,
+        String value,
+        IconData iconData,
+        VoidCallback onEdit,
+        ) {
+      return Card(
+        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        child: ListTile(
+          leading: Icon(
+            iconData,
+            color: Colors.green,
+          ),
+          title: Text(
+            title,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          subtitle: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(value),
+              IconButton(
+                icon: Icon(Icons.edit),
+                onPressed: onEdit,
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+
+    static void _showEditDialog(BuildContext context, String title, String currentValue, Function(String) onSave) {
+      TextEditingController controller = TextEditingController(text: currentValue);
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Edit $title'),
+            content: TextField(
+              controller: controller,
+              decoration: InputDecoration(
+                labelText: title,
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context); // Close the dialog
+                },
+                child: Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () async {
+                  // Call the onSave callback
+                  String newValue = controller.text;
+                  onSave(newValue);
+
+                  // Close the dialog
+                  Navigator.pop(context);
+
+                  // Optionally, update the UI with the new value
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('$title updated successfully to $newValue'),
+                    ),
+                  );
+                },
+                child: Text('Save'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+
+
   }

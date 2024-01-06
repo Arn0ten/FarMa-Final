@@ -156,20 +156,18 @@ class _ProductPostPageState extends State<ProductPostPage> {
         _unitController.clear();
         _imagePath = '';
         setState(() {});
-      }
-      if (mounted) {
-        setState(() {
-          // Update the UI
-        });
-      }else {
-        // Handle the case when the user is not authenticated
-        print('User is not authenticated.');
+        // Show a Snackbar indicating success
+        _showSnackBar(context, 'Product posted successfully');
       }
     } catch (e) {
       // Handle error
       print('Failed to add product: $e');
+
+      // Show a Snackbar indicating failure
+      _showSnackBar(context, 'Failed to post product');
     }
   }
+
 
 
 
