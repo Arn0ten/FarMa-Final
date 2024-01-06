@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:agriplant/services/auth/auth_gate.dart';
+import 'package:agriplant/services/auth/login_or_register.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -20,7 +21,7 @@ class _SplashScreenState extends State<SplashScreen>
 
     _animationController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 2),
+      duration: const Duration(seconds: 5),
     );
 
     _animation = CurvedAnimation(
@@ -31,7 +32,7 @@ class _SplashScreenState extends State<SplashScreen>
     _animationController.forward();
 
     Timer(
-      Duration(seconds: 1),
+      Duration(seconds: 5),
       () {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
