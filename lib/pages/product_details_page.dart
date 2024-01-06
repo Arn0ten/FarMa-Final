@@ -12,6 +12,7 @@ class ProductDetailsPage extends StatefulWidget {
   const ProductDetailsPage({
     Key? key,
     required this.product,
+
   }) : super(key: key);
 
   final Product product;

@@ -184,8 +184,6 @@
     }
 
     static Widget _buildProductCard(Product product, VoidCallback editCallback, VoidCallback deleteCallback) {
-      bool isCurrentUserProduct = AuthService().getCurrentUserId() == product.postedByUser.uid;
-
       return Card(
         margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 13),
         child: Container(
@@ -242,28 +240,26 @@
                     }
                   },
                   itemBuilder: (BuildContext context) => [
-                    if (isCurrentUserProduct)  // Conditionally render the buttons
-                      PopupMenuItem<String>(
-                        value: 'edit',
-                        child: Row(
-                          children: [
-                            Icon(Icons.edit, color: Colors.grey),
-                            SizedBox(width: 8),
-                            Text('Edit'),
-                          ],
-                        ),
+                    PopupMenuItem<String>(
+                      value: 'edit',
+                      child: Row(
+                        children: [
+                          Icon(Icons.edit, color: Colors.grey),
+                          SizedBox(width: 8),
+                          Text('Edit'),
+                        ],
                       ),
-                    if (isCurrentUserProduct)
-                      PopupMenuItem<String>(
-                        value: 'delete',
-                        child: Row(
-                          children: [
-                            Icon(Icons.delete, color: Colors.grey),
-                            SizedBox(width: 8),
-                            Text('Delete'),
-                          ],
-                        ),
+                    ),
+                    PopupMenuItem<String>(
+                      value: 'delete',
+                      child: Row(
+                        children: [
+                          Icon(Icons.delete, color: Colors.grey),
+                          SizedBox(width: 8),
+                          Text('Delete'),
+                        ],
                       ),
+                    ),
                   ],
                 ),
               ),
@@ -272,7 +268,6 @@
         ),
       );
     }
-
 
 
 

@@ -52,7 +52,9 @@ class OrderItem extends StatelessWidget {
             const SizedBox(height: 20),
             ...List.generate(products.length, (index) {
               final product = products[index];
-              return OrderProduct(order: order, product: product);
+              return
+                // Displaying the product image
+              OrderProduct(order: order, product: product);
             }),
             if (order.products.length > 1) const SizedBox(height: 10),
             if (order.products.length > 1)
@@ -90,4 +92,20 @@ class OrderItem extends StatelessWidget {
       ),
     );
   }
+
+  ImageProvider<Object> _getImageProvider(String imagePath) {
+    if (imagePath.startsWith('http')) {
+      return NetworkImage(imagePath);
+    } else if (imagePath.startsWith('assets/')) {
+      String decodedPath = Uri.decodeFull(imagePath);
+      return AssetImage(decodedPath);
+    } else {
+      // Assuming it's a local file path
+      String relativePath = imagePath.split('/cache/').last;
+      String decodedPath = Uri.decodeFull(relativePath);
+      return AssetImage(decodedPath);
+    }
+  }
+
+
 }

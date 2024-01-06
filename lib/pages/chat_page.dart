@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:agriplant/widgets/chat_bubble.dart';
 import 'package:agriplant/components/my_textfield.dart';
 import 'package:agriplant/services/chat/chat_service.dart';
@@ -26,15 +28,22 @@ class _ChatPageState extends State<ChatPage> {
   final ChatService _chatService = ChatService();
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final ScrollController _scrollController = ScrollController();
+  final StreamController<bool> _newMessageController = StreamController<bool>.broadcast();
 
   @override
   void initState() {
     super.initState();
     _chatService.addListener(() {
-      setState(() {
-        // Rebuild the widget when unreadMessageCount changes
-      });
+      // Notify the widget that a new message has arrived
+      _newMessageController.add(true);
     });
+  }
+
+  @override
+  void dispose() {
+    // Close the stream controller when the widget is disposed
+    _newMessageController.close();
+    super.dispose();
   }
 
   void sendMessage() async {
@@ -43,9 +52,14 @@ class _ChatPageState extends State<ChatPage> {
         widget.receiveruserID,
         _messageController.text,
       );
-      _messageController.clear();
+
+      // Clear the text field and trigger a rebuild
+      setState(() {
+        _messageController.clear();
+      });
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -79,11 +93,14 @@ class _ChatPageState extends State<ChatPage> {
         }
 
         WidgetsBinding.instance!.addPostFrameCallback((_) {
-          _scrollController.animateTo(
-            _scrollController.position.maxScrollExtent,
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-          );
+          // Scroll down when a new message arrives
+          if (_scrollController.hasClients) {
+            _scrollController.animateTo(
+              _scrollController.position.maxScrollExtent,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+            );
+          }
         });
 
         if (snapshot.hasData) {
@@ -110,25 +127,25 @@ class _ChatPageState extends State<ChatPage> {
 
     var isSender = data['senderId'] == _firebaseAuth.currentUser?.uid;
     String senderEmail = data['senderEmail'];
-    String senderUserId = data['senderId']; // Use senderId as senderUserId
+    String senderUserId = data['senderId'];
+    Timestamp timestamp = data['timestamp']; // Assuming 'timestamp' is the field in Firestore
 
     return StreamBuilder<String?>(
       stream: AuthService().getUserProfileImageURLStream(senderUserId),
       builder: (context, snapshot) {
         String senderProfileImageURL = snapshot.data ?? 'DEFAULT_IMAGE_URL';
-        // Replace 'DEFAULT_IMAGE_URL' with your actual default image URL or handle it as needed
 
         return ChatBubble(
           senderEmail: senderEmail,
           message: data['message'],
           isSender: isSender,
           senderProfileImageURL: senderProfileImageURL,
-          senderUserId: senderUserId, // Pass senderUserId to ChatBubble
+          senderUserId: senderUserId,
+          timestamp: timestamp,
         );
       },
     );
   }
-
 
 
   Widget _buildMessageInput() {

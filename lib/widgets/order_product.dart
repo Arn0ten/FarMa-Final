@@ -37,7 +37,7 @@ class OrderProduct extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
               image: DecorationImage(
                 fit: BoxFit.cover,
-                image: AssetImage(product.image),
+                image: _getImageProvider(product.image),
               ),
             ),
           ),
@@ -63,11 +63,11 @@ class OrderProduct extends StatelessWidget {
                     Text(
                       "\₱${product.price}",
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        color: Theme.of(context).colorScheme.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                    Text("Qty: 3")
+                    Text("Qty: ${product.quantity}")
                   ],
                 )
               ],
@@ -76,5 +76,18 @@ class OrderProduct extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  ImageProvider<Object> _getImageProvider(String imagePath) {
+    if (imagePath.startsWith('http')) {
+      return NetworkImage(imagePath);
+    } else if (imagePath.startsWith('assets/')) {
+      String decodedPath = Uri.decodeFull(imagePath);
+      return AssetImage(decodedPath);
+    } else {
+      String relativePath = imagePath.split('/cache/').last;
+      String decodedPath = Uri.decodeFull(relativePath);
+      return AssetImage(decodedPath);
+    }
   }
 }
